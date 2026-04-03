@@ -6,7 +6,7 @@ const ChiSiamo = () => (
 
     <div className="space-y-6 text-body text-muted-foreground">
       <p>
-        <strong className="text-foreground">RifugiAlpini.it</strong> nasce dall'amore per la montagna e dalla volontà di creare uno strumento utile per chi vive e lavora nei rifugi italiani.
+        <strong className="text-foreground">Rifugi & Bivacchi</strong> nasce dall'amore per la montagna e dalla volontà di creare uno strumento utile per chi vive e lavora nei rifugi italiani.
       </p>
 
       <p>

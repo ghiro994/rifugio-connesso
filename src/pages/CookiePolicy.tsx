@@ -2,7 +2,7 @@ const CookiePolicy = () => (
   <div className="container-page py-10 max-w-3xl">
     <h1 className="heading-section mb-6">Cookie Policy</h1>
     <div className="space-y-4 text-body text-muted-foreground">
-      <p>Questa pagina descrive le modalità di utilizzo dei cookie sul sito RifugiAlpini.it.</p>
+      <p>Questa pagina descrive le modalità di utilizzo dei cookie sul sito Rifugi & Bivacchi.</p>
       <h2 className="heading-card text-foreground mt-6">Cosa sono i cookie</h2>
       <p>I cookie sono piccoli file di testo che vengono memorizzati nel browser dell'utente durante la navigazione.</p>
       <h2 className="heading-card text-foreground mt-6">Cookie tecnici</h2>
