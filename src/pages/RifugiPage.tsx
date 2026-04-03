@@ -1,23 +1,66 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import RifugioCard from '@/components/RifugioCard';
-import { getRifugi } from '@/lib/store';
 import { REGIONS, MOUNTAIN_RANGES, SERVICES } from '@/lib/types';
+
+interface Rifugio {
+  id: string;
+  name: string;
+  region: string;
+  province: string;
+  mountain_range: string;
+  altitude: number;
+  description: string;
+  services: string[];
+  access: string;
+  contacts: string;
+  website: string;
+  images: string[];
+}
 
 const RifugiPage = () => {
   const [region, setRegion] = useState('');
   const [range, setRange] = useState('');
   const [service, setService] = useState('');
   const [maxAlt, setMaxAlt] = useState('');
+  const [rifugi, setRifugi] = useState<Rifugio[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const rifugi = useMemo(() => {
-    return getRifugi().filter((r) => {
-      if (region && r.region !== region) return false;
-      if (range && r.mountainRange !== range) return false;
-      if (service && !r.services.includes(service)) return false;
-      if (maxAlt && r.altitude > Number(maxAlt)) return false;
-      return true;
-    });
+  useEffect(() => {
+    const fetchRifugi = async () => {
+      let query = supabase.from('rifugi').select('*').order('name');
+      if (region) query = query.eq('region', region);
+      if (range) query = query.eq('mountain_range', range);
+      if (maxAlt) query = query.lte('altitude', Number(maxAlt));
+      
+      const { data } = await query;
+      let results = (data || []) as Rifugio[];
+      
+      if (service) {
+        results = results.filter(r => r.services.includes(service));
+      }
+      
+      setRifugi(results);
+      setLoading(false);
+    };
+    fetchRifugi();
   }, [region, range, service, maxAlt]);
+
+  // Map DB format to component format
+  const mapRifugio = (r: Rifugio) => ({
+    id: r.id,
+    name: r.name,
+    region: r.region,
+    province: r.province,
+    mountainRange: r.mountain_range,
+    altitude: r.altitude,
+    description: r.description,
+    services: r.services,
+    access: r.access,
+    contacts: r.contacts,
+    website: r.website,
+    images: r.images,
+  });
 
   return (
     <div className="container-page py-10">
@@ -49,11 +92,13 @@ const RifugiPage = () => {
         </select>
       </div>
 
-      {rifugi.length === 0 ? (
+      {loading ? (
+        <p className="text-center text-muted-foreground py-12">Caricamento rifugi...</p>
+      ) : rifugi.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">Nessun rifugio trovato con i filtri selezionati.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rifugi.map((r) => <RifugioCard key={r.id} rifugio={r} />)}
+          {rifugi.map((r) => <RifugioCard key={r.id} rifugio={mapRifugio(r)} />)}
         </div>
       )}
     </div>
