@@ -1,5 +1,4 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import { read, utils } from "https://esm.sh/xlsx@0.18.5";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -25,7 +24,6 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAnon = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Verify user is admin
     const userClient = createClient(supabaseUrl, supabaseAnon, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -49,49 +47,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Parse XLS from request body
-    const formData = await req.formData();
-    const file = formData.get("file") as File;
-    if (!file) {
-      return new Response(JSON.stringify({ error: "Nessun file caricato" }), {
+    const { rows } = await req.json();
+    if (!rows || !Array.isArray(rows) || !rows.length) {
+      return new Response(JSON.stringify({ error: "Nessun dato ricevuto" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-    }
-
-    const buffer = await file.arrayBuffer();
-    const workbook = read(new Uint8Array(buffer), { type: "array" });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows: Record<string, unknown>[] = utils.sheet_to_json(sheet);
-
-    if (!rows.length) {
-      return new Response(JSON.stringify({ error: "Il file è vuoto" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Column mapping (flexible: accepts Italian or English headers)
-    const colMap: Record<string, string[]> = {
-      name: ["nome", "name", "rifugio"],
-      region: ["regione", "region"],
-      province: ["provincia", "province"],
-      mountain_range: ["gruppo_montuoso", "mountain_range", "catena", "gruppo", "gruppo montuoso"],
-      altitude: ["altitudine", "altitude", "quota"],
-      description: ["descrizione", "description"],
-      services: ["servizi", "services"],
-      access: ["accesso", "access", "come_arrivare", "come arrivare"],
-      contacts: ["contatti", "contacts", "telefono"],
-      website: ["sito", "website", "sito_web", "sito web", "url"],
-    };
-
-    function findCol(row: Record<string, unknown>, aliases: string[]): unknown {
-      for (const alias of aliases) {
-        for (const key of Object.keys(row)) {
-          if (key.toLowerCase().trim().replace(/\s+/g, "_") === alias.replace(/\s+/g, "_")) return row[key];
-        }
-      }
-      return undefined;
     }
 
     let inserted = 0;
@@ -100,9 +61,8 @@ Deno.serve(async (req) => {
     const errors: string[] = [];
 
     for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      const name = String(findCol(row, colMap.name) || "").trim();
-      const region = String(findCol(row, colMap.region) || "").trim();
+      const record = rows[i];
+      const { name, region } = record;
 
       if (!name || !region) {
         skipped++;
@@ -110,25 +70,6 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      const servicesRaw = findCol(row, colMap.services);
-      const services = servicesRaw
-        ? String(servicesRaw).split(/[,;]/).map((s: string) => s.trim()).filter(Boolean)
-        : [];
-
-      const record = {
-        name,
-        region,
-        province: String(findCol(row, colMap.province) || ""),
-        mountain_range: String(findCol(row, colMap.mountain_range) || ""),
-        altitude: Number(findCol(row, colMap.altitude)) || 0,
-        description: String(findCol(row, colMap.description) || ""),
-        services,
-        access: String(findCol(row, colMap.access) || ""),
-        contacts: String(findCol(row, colMap.contacts) || ""),
-        website: String(findCol(row, colMap.website) || ""),
-      };
-
-      // Upsert by name + region
       const { data: existing } = await adminClient
         .from("rifugi")
         .select("id")
