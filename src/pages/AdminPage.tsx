@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet } from 'lucide-react';
+import { read, utils } from 'xlsx';
 
 type Announcement = Tables<'announcements'>;
 type Status = Announcement['status'];
@@ -66,6 +67,53 @@ const AdminPage = () => {
     navigate('/');
   };
 
+  const parseXlsRows = (buffer: ArrayBuffer) => {
+    const workbook = read(new Uint8Array(buffer), { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const raw: Record<string, unknown>[] = utils.sheet_to_json(sheet);
+
+    const colMap: Record<string, string[]> = {
+      name: ['nome', 'name', 'rifugio'],
+      region: ['regione', 'region'],
+      province: ['provincia', 'province'],
+      mountain_range: ['gruppo_montuoso', 'mountain_range', 'catena', 'gruppo', 'gruppo_montuoso'],
+      altitude: ['altitudine', 'altitude', 'quota'],
+      description: ['descrizione', 'description'],
+      services: ['servizi', 'services'],
+      access: ['accesso', 'access', 'come_arrivare'],
+      contacts: ['contatti', 'contacts', 'telefono'],
+      website: ['sito', 'website', 'sito_web', 'url'],
+    };
+
+    function findCol(row: Record<string, unknown>, aliases: string[]): unknown {
+      for (const alias of aliases) {
+        for (const key of Object.keys(row)) {
+          if (key.toLowerCase().trim().replace(/\s+/g, '_') === alias) return row[key];
+        }
+      }
+      return undefined;
+    }
+
+    return raw.map((row) => {
+      const servicesRaw = findCol(row, colMap.services);
+      const services = servicesRaw
+        ? String(servicesRaw).split(/[,;]/).map((s) => s.trim()).filter(Boolean)
+        : [];
+      return {
+        name: String(findCol(row, colMap.name) || '').trim(),
+        region: String(findCol(row, colMap.region) || '').trim(),
+        province: String(findCol(row, colMap.province) || ''),
+        mountain_range: String(findCol(row, colMap.mountain_range) || ''),
+        altitude: Number(findCol(row, colMap.altitude)) || 0,
+        description: String(findCol(row, colMap.description) || ''),
+        services,
+        access: String(findCol(row, colMap.access) || ''),
+        contacts: String(findCol(row, colMap.contacts) || ''),
+        website: String(findCol(row, colMap.website) || ''),
+      };
+    });
+  };
+
   const handleUploadXls = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -77,8 +125,10 @@ const AdminPage = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Non autenticato');
 
-      const formData = new FormData();
-      formData.append('file', file);
+      // Parse XLS client-side
+      const buffer = await file.arrayBuffer();
+      const rows = parseXlsRows(buffer);
+      if (!rows.length) throw new Error('Il file è vuoto');
 
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const res = await fetch(
@@ -87,8 +137,9 @@ const AdminPage = () => {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
           },
-          body: formData,
+          body: JSON.stringify({ rows }),
         }
       );
 
