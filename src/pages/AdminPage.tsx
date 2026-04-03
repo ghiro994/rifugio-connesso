@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
 import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet } from 'lucide-react';
+import { read, utils } from 'xlsx';
 
 type Announcement = Tables<'announcements'>;
 type Status = Announcement['status'];
