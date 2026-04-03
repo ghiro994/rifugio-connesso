@@ -19,7 +19,7 @@ const Navbar = () => {
       <div className="container-page flex items-center justify-between h-16">
         <Link to="/" className="flex items-center gap-2 font-heading text-xl text-foreground">
           <Mountain className="h-6 w-6 text-primary" />
-          <span>RifugiAlpini.it</span>
+          <span>Rifugi & Bivacchi</span>
         </Link>
 
         {/* Desktop */}

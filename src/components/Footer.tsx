@@ -40,7 +40,7 @@ const Footer = () => (
         </div>
       </div>
       <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-sm opacity-50">
-        © {new Date().getFullYear()} RifugiAlpini.it — Tutti i diritti riservati
+        © {new Date().getFullYear()} Rifugi & Bivacchi — Tutti i diritti riservati
       </div>
     </div>
   </footer>
