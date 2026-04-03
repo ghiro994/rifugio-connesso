@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          availability: string | null
+          contact_name: string
+          created_at: string
+          description: string
+          desired_role: string | null
+          email: string
+          experience: string | null
+          id: string
+          phone: string | null
+          preferred_area: string | null
+          region: string
+          rifugio_name: string | null
+          role_sought: string | null
+          season: string
+          status: Database["public"]["Enums"]["announcement_status"]
+          title: string
+          type: Database["public"]["Enums"]["announcement_type"]
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          availability?: string | null
+          contact_name: string
+          created_at?: string
+          description: string
+          desired_role?: string | null
+          email: string
+          experience?: string | null
+          id?: string
+          phone?: string | null
+          preferred_area?: string | null
+          region: string
+          rifugio_name?: string | null
+          role_sought?: string | null
+          season: string
+          status?: Database["public"]["Enums"]["announcement_status"]
+          title: string
+          type: Database["public"]["Enums"]["announcement_type"]
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          availability?: string | null
+          contact_name?: string
+          created_at?: string
+          description?: string
+          desired_role?: string | null
+          email?: string
+          experience?: string | null
+          id?: string
+          phone?: string | null
+          preferred_area?: string | null
+          region?: string
+          rifugio_name?: string | null
+          role_sought?: string | null
+          season?: string
+          status?: Database["public"]["Enums"]["announcement_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["announcement_type"]
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +88,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      announcement_status: "bozza" | "in_attesa" | "pubblicato" | "rifiutato"
+      announcement_type: "cerco" | "offro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +216,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      announcement_status: ["bozza", "in_attesa", "pubblicato", "rifiutato"],
+      announcement_type: ["cerco", "offro"],
+    },
   },
 } as const
