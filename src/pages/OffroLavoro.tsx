@@ -1,22 +1,28 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import AnnouncementCard from '@/components/AnnouncementCard';
-import { getPublishedAnnouncements } from '@/lib/store';
+import { supabase } from '@/integrations/supabase/client';
 import { REGIONS, ROLES, SEASONS } from '@/lib/types';
+import type { Tables } from '@/integrations/supabase/types';
 
 const OffroLavoro = () => {
   const [region, setRegion] = useState('');
   const [role, setRole] = useState('');
   const [season, setSeason] = useState('');
+  const [announcements, setAnnouncements] = useState<Tables<'announcements'>[]>([]);
 
-  const announcements = useMemo(() => {
-    return getPublishedAnnouncements('offro').filter((a) => {
-      if (region && a.region !== region) return false;
-      if (role && a.roleSought !== role) return false;
-      if (season && a.season !== season) return false;
-      return true;
-    });
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      let query = supabase.from('announcements').select('*')
+        .eq('type', 'offro').eq('status', 'pubblicato').order('created_at', { ascending: false });
+      if (region) query = query.eq('region', region);
+      if (role) query = query.eq('role_sought', role);
+      if (season) query = query.eq('season', season);
+      const { data } = await query;
+      setAnnouncements(data || []);
+    };
+    fetchAnnouncements();
   }, [region, role, season]);
 
   return (
@@ -31,7 +37,6 @@ const OffroLavoro = () => {
         </Link>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-8 p-4 bg-secondary rounded-lg">
         <select value={region} onChange={(e) => setRegion(e.target.value)} className="text-sm border border-border rounded-md px-3 py-2 bg-card text-foreground">
           <option value="">Tutte le regioni</option>

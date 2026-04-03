@@ -1,14 +1,25 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Briefcase, Search, Mountain, ArrowRight, Users, CheckCircle, Clock } from 'lucide-react';
 import heroImage from '@/assets/hero-mountains.jpg';
 import AnnouncementCard from '@/components/AnnouncementCard';
 import RifugioCard from '@/components/RifugioCard';
-import { getPublishedAnnouncements } from '@/lib/store';
+import { supabase } from '@/integrations/supabase/client';
 import { getRifugi } from '@/lib/store';
+import type { Tables } from '@/integrations/supabase/types';
 
 const Index = () => {
-  const latestAnnouncements = getPublishedAnnouncements().slice(0, 3);
+  const [latestAnnouncements, setLatestAnnouncements] = useState<Tables<'announcements'>[]>([]);
   const rifugi = getRifugi().slice(0, 3);
+
+  useEffect(() => {
+    const fetchLatest = async () => {
+      const { data } = await supabase.from('announcements').select('*')
+        .eq('status', 'pubblicato').order('created_at', { ascending: false }).limit(3);
+      setLatestAnnouncements(data || []);
+    };
+    fetchLatest();
+  }, []);
 
   return (
     <>
@@ -61,11 +72,15 @@ const Index = () => {
               Tutti gli annunci <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestAnnouncements.map((a) => (
-              <AnnouncementCard key={a.id} announcement={a} />
-            ))}
-          </div>
+          {latestAnnouncements.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {latestAnnouncements.map((a) => (
+                <AnnouncementCard key={a.id} announcement={a} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-8">Nessun annuncio pubblicato ancora.</p>
+          )}
           <div className="text-center mt-8">
             <Link to="/pubblica-annuncio" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:opacity-90 transition-opacity">
               Pubblica un annuncio
