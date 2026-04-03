@@ -167,6 +167,57 @@ export type Database = {
         }
         Relationships: []
       }
+      rifugi: {
+        Row: {
+          access: string
+          altitude: number
+          contacts: string
+          created_at: string
+          description: string
+          id: string
+          images: string[]
+          mountain_range: string
+          name: string
+          province: string
+          region: string
+          services: string[]
+          updated_at: string
+          website: string
+        }
+        Insert: {
+          access?: string
+          altitude?: number
+          contacts?: string
+          created_at?: string
+          description?: string
+          id?: string
+          images?: string[]
+          mountain_range?: string
+          name: string
+          province?: string
+          region: string
+          services?: string[]
+          updated_at?: string
+          website?: string
+        }
+        Update: {
+          access?: string
+          altitude?: number
+          contacts?: string
+          created_at?: string
+          description?: string
+          id?: string
+          images?: string[]
+          mountain_range?: string
+          name?: string
+          province?: string
+          region?: string
+          services?: string[]
+          updated_at?: string
+          website?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string
