@@ -1,9 +1,8 @@
-import { Link } from 'react-router-dom';
-import { Announcement } from '@/lib/types';
+import type { Tables } from '@/integrations/supabase/types';
 import { MapPin, Calendar, Briefcase, Building2 } from 'lucide-react';
 
 interface Props {
-  announcement: Announcement;
+  announcement: Tables<'announcements'>;
 }
 
 const AnnouncementCard = ({ announcement: a }: Props) => {
@@ -19,11 +18,11 @@ const AnnouncementCard = ({ announcement: a }: Props) => {
       </div>
 
       <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-        {a.rifugioName && (
-          <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{a.rifugioName}</span>
+        {a.rifugio_name && (
+          <span className="flex items-center gap-1"><Building2 className="h-3.5 w-3.5" />{a.rifugio_name}</span>
         )}
-        {(a.roleSought || a.desiredRole) && (
-          <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" />{a.roleSought || a.desiredRole}</span>
+        {(a.role_sought || a.desired_role) && (
+          <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5" />{a.role_sought || a.desired_role}</span>
         )}
         <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{a.region}</span>
         <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{a.season}</span>
@@ -36,7 +35,7 @@ const AnnouncementCard = ({ announcement: a }: Props) => {
       )}
 
       <div className="flex items-center justify-between mt-auto pt-2">
-        <span className="text-sm text-muted-foreground">{a.contactName}</span>
+        <span className="text-sm text-muted-foreground">{a.contact_name}</span>
         <a href={mailtoLink} className="text-sm font-medium bg-primary text-primary-foreground px-4 py-1.5 rounded-md hover:opacity-90 transition-opacity">
           Contatta
         </a>

@@ -1,22 +1,28 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import AnnouncementCard from '@/components/AnnouncementCard';
-import { getPublishedAnnouncements } from '@/lib/store';
+import { supabase } from '@/integrations/supabase/client';
 import { REGIONS, ROLES, SEASONS } from '@/lib/types';
+import type { Tables } from '@/integrations/supabase/types';
 
 const CercoLavoro = () => {
   const [region, setRegion] = useState('');
   const [role, setRole] = useState('');
   const [season, setSeason] = useState('');
+  const [announcements, setAnnouncements] = useState<Tables<'announcements'>[]>([]);
 
-  const announcements = useMemo(() => {
-    return getPublishedAnnouncements('cerco').filter((a) => {
-      if (region && a.region !== region) return false;
-      if (role && a.desiredRole !== role) return false;
-      if (season && a.season !== season) return false;
-      return true;
-    });
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      let query = supabase.from('announcements').select('*')
+        .eq('type', 'cerco').eq('status', 'pubblicato').order('created_at', { ascending: false });
+      if (region) query = query.eq('region', region);
+      if (role) query = query.eq('desired_role', role);
+      if (season) query = query.eq('season', season);
+      const { data } = await query;
+      setAnnouncements(data || []);
+    };
+    fetchAnnouncements();
   }, [region, role, season]);
 
   return (
