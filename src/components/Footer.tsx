@@ -35,6 +35,7 @@ const Footer = () => (
           <ul className="space-y-2 text-sm opacity-70">
             <li><Link to="/privacy" className="hover:opacity-100 transition-opacity">Privacy Policy</Link></li>
             <li><Link to="/cookie" className="hover:opacity-100 transition-opacity">Cookie Policy</Link></li>
+            <li><Link to="/login" className="hover:opacity-100 transition-opacity">Login</Link></li>
           </ul>
           <p className="text-sm opacity-50 mt-4">info@rifugiebivacchi.it</p>
         </div>
