@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
-import { Trash2, Check, X, LogOut } from 'lucide-react';
+import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet } from 'lucide-react';
 
 type Announcement = Tables<'announcements'>;
 type Status = Announcement['status'];
@@ -27,6 +27,11 @@ const AdminPage = () => {
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState<{
+    inserted: number; updated: number; skipped: number; errors: string[]; total: number;
+  } | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -61,6 +66,43 @@ const AdminPage = () => {
     navigate('/');
   };
 
+  const handleUploadXls = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setUploadResult(null);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Non autenticato');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/import-rifugi`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: formData,
+        }
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Errore durante l\'importazione');
+      setUploadResult(result);
+    } catch (err: any) {
+      setUploadResult({ inserted: 0, updated: 0, skipped: 0, errors: [err.message], total: 0 });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   if (authLoading || loading) {
     return <div className="container-page py-20 text-center text-muted-foreground">Caricamento...</div>;
   }
@@ -70,11 +112,58 @@ const AdminPage = () => {
   return (
     <div className="container-page py-10">
       <div className="flex items-center justify-between mb-2">
-        <h1 className="heading-section">Moderazione annunci</h1>
+        <h1 className="heading-section">Area Amministrazione</h1>
         <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <LogOut className="h-4 w-4" /> Esci
         </button>
       </div>
+
+      {/* Upload Rifugi Section */}
+      <section className="mb-12 card-mountain">
+        <div className="flex items-center gap-3 mb-4">
+          <FileSpreadsheet className="h-5 w-5 text-primary" />
+          <h2 className="heading-card">Importa rifugi da file XLS/XLSX</h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          Carica un file Excel con le colonne: <strong>Nome, Regione, Provincia, Gruppo Montuoso, Altitudine, Descrizione, Servizi, Accesso, Contatti, Sito Web</strong>. I servizi vanno separati da virgola. I rifugi già presenti (stesso nome e regione) verranno aggiornati.
+        </p>
+        <div className="flex items-center gap-4">
+          <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors ${uploading ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground hover:opacity-90'}`}>
+            <Upload className="h-4 w-4" />
+            {uploading ? 'Importazione in corso...' : 'Scegli file XLS'}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xls,.xlsx"
+              className="hidden"
+              onChange={handleUploadXls}
+              disabled={uploading}
+            />
+          </label>
+        </div>
+
+        {uploadResult && (
+          <div className="mt-4 p-4 rounded-lg bg-secondary text-sm space-y-1">
+            <p><strong>Totale righe:</strong> {uploadResult.total}</p>
+            <p className="text-primary"><strong>Inseriti:</strong> {uploadResult.inserted}</p>
+            <p className="text-accent"><strong>Aggiornati:</strong> {uploadResult.updated}</p>
+            {uploadResult.skipped > 0 && (
+              <p className="text-destructive"><strong>Saltati:</strong> {uploadResult.skipped}</p>
+            )}
+            {uploadResult.errors.length > 0 && (
+              <div className="mt-2">
+                <p className="font-medium text-destructive">Errori:</p>
+                <ul className="list-disc list-inside text-destructive">
+                  {uploadResult.errors.map((e, i) => <li key={i}>{e}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
+      {/* Announcements Moderation */}
+      <h2 className="heading-card mb-4">Moderazione annunci</h2>
       <p className="text-body text-muted-foreground mb-8">Gestisci gli annunci inviati. Approva, rifiuta o elimina.</p>
 
       {announcements.length === 0 ? (
