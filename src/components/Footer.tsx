@@ -8,7 +8,7 @@ const Footer = () => (
         <div className="space-y-3">
           <div className="flex items-center gap-2 font-heading text-xl">
             <Mountain className="h-5 w-5" />
-            RifugiAlpini.it
+            Rifugi & Bivacchi
           </div>
           <p className="text-sm opacity-70">
             Il portale dei rifugi italiani. Annunci di lavoro stagionale e archivio dei rifugi e bivacchi in Italia.
@@ -36,11 +36,11 @@ const Footer = () => (
             <li><Link to="/privacy" className="hover:opacity-100 transition-opacity">Privacy Policy</Link></li>
             <li><Link to="/cookie" className="hover:opacity-100 transition-opacity">Cookie Policy</Link></li>
           </ul>
-          <p className="text-sm opacity-50 mt-4">info@rifugialpini.it</p>
+          <p className="text-sm opacity-50 mt-4">info@rifugiebivacchi.it</p>
         </div>
       </div>
       <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-sm opacity-50">
-        © {new Date().getFullYear()} RifugiAlpini.it — Tutti i diritti riservati
+        © {new Date().getFullYear()} Rifugi & Bivacchi — Tutti i diritti riservati
       </div>
     </div>
   </footer>

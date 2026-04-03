@@ -6,7 +6,7 @@ interface Props {
 }
 
 const AnnouncementCard = ({ announcement: a }: Props) => {
-  const mailtoLink = `mailto:${a.email}?subject=${encodeURIComponent(`Contatto da RifugiAlpini.it: ${a.title}`)}`;
+  const mailtoLink = `mailto:${a.email}?subject=${encodeURIComponent(`Contatto da Rifugi & Bivacchi: ${a.title}`)}`;
 
   return (
     <div className="card-mountain flex flex-col gap-3 animate-fade-in">
