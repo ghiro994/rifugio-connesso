@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
-import { Mountain, Menu, X } from 'lucide-react';
+import { Mountain, Menu, X, Settings } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { isAdmin } = useAuth();
 
   const links = [
     { to: '/', label: 'Home' },
@@ -32,6 +34,12 @@ const Navbar = () => {
           <Link to="/pubblica-annuncio" className="text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-md hover:opacity-90 transition-opacity">
             Pubblica annuncio
           </Link>
+          {isAdmin && (
+            <Link to="/admin" className="flex items-center gap-1.5 text-sm font-medium text-accent hover:text-foreground transition-colors">
+              <Settings className="h-4 w-4" />
+              Gestione
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -51,6 +59,12 @@ const Navbar = () => {
           <Link to="/pubblica-annuncio" onClick={() => setOpen(false)} className="block text-sm font-medium bg-primary text-primary-foreground px-4 py-2 rounded-md text-center">
             Pubblica annuncio
           </Link>
+          {isAdmin && (
+            <Link to="/admin" onClick={() => setOpen(false)} className="flex items-center gap-1.5 text-sm font-medium text-accent hover:text-foreground">
+              <Settings className="h-4 w-4" />
+              Gestione
+            </Link>
+          )}
         </div>
       )}
     </nav>
