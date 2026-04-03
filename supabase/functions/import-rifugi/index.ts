@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
-import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.mjs";
+import { read, utils } from "https://esm.sh/xlsx@0.18.5";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -60,9 +60,9 @@ Deno.serve(async (req) => {
     }
 
     const buffer = await file.arrayBuffer();
-    const workbook = XLSX.read(new Uint8Array(buffer), { type: "array" });
+    const workbook = read(new Uint8Array(buffer), { type: "array" });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rows: Record<string, unknown>[] = XLSX.utils.sheet_to_json(sheet);
+    const rows: Record<string, unknown>[] = utils.sheet_to_json(sheet);
 
     if (!rows.length) {
       return new Response(JSON.stringify({ error: "Il file è vuoto" }), {
@@ -76,19 +76,19 @@ Deno.serve(async (req) => {
       name: ["nome", "name", "rifugio"],
       region: ["regione", "region"],
       province: ["provincia", "province"],
-      mountain_range: ["gruppo_montuoso", "mountain_range", "catena", "gruppo"],
+      mountain_range: ["gruppo_montuoso", "mountain_range", "catena", "gruppo", "gruppo montuoso"],
       altitude: ["altitudine", "altitude", "quota"],
       description: ["descrizione", "description"],
       services: ["servizi", "services"],
-      access: ["accesso", "access", "come_arrivare"],
+      access: ["accesso", "access", "come_arrivare", "come arrivare"],
       contacts: ["contatti", "contacts", "telefono"],
-      website: ["sito", "website", "sito_web", "url"],
+      website: ["sito", "website", "sito_web", "sito web", "url"],
     };
 
     function findCol(row: Record<string, unknown>, aliases: string[]): unknown {
       for (const alias of aliases) {
         for (const key of Object.keys(row)) {
-          if (key.toLowerCase().trim().replace(/\s+/g, "_") === alias) return row[key];
+          if (key.toLowerCase().trim().replace(/\s+/g, "_") === alias.replace(/\s+/g, "_")) return row[key];
         }
       }
       return undefined;
