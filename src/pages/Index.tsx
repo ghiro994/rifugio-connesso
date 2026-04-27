@@ -89,23 +89,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Rifugi */}
-      <section className="container-page py-16">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="heading-section">Rifugi e Bivacchi</h2>
-          <Link to="/rifugi" className="flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-            Esplora tutti <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-        <p className="text-body text-muted-foreground max-w-2xl mb-8">
-          Esplora l'archivio dei rifugi e bivacchi italiani. Cerca per regione, catena montuosa, quota e servizi disponibili.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rifugi.map((r) => (
-            <RifugioCard key={r.id} rifugio={r} />
-          ))}
-        </div>
-      </section>
     </>
   );
 };

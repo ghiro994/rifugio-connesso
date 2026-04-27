@@ -11,7 +11,6 @@ const Navbar = () => {
     { to: '/', label: 'Home' },
     { to: '/offro-lavoro', label: 'Offro lavoro' },
     { to: '/cerco-lavoro', label: 'Cerco lavoro' },
-    { to: '/rifugi', label: 'Rifugi e Bivacchi' },
     { to: '/chi-siamo', label: 'Chi siamo' },
     { to: '/contatti', label: 'Contatti' },
   ];
