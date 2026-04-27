@@ -1,4 +1,4 @@
-import { Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin, Phone, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 
 const Contatti = () => {
@@ -17,13 +17,29 @@ const Contatti = () => {
         <div className="space-y-4 text-body text-muted-foreground">
           <p>Hai domande, suggerimenti o vuoi segnalarci un rifugio? Scrivici, ti risponderemo il prima possibile.</p>
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-primary" />
-              <span>info@rifugiebivacchi.it</span>
+            <div className="flex items-start gap-2">
+              <MapPin className="h-4 w-4 text-primary mt-1 shrink-0" />
+              <div>
+                <p className="font-medium text-foreground">Rifugi e bivacchi</p>
+                <p>Sezione di Lugo di Romagna</p>
+                <p>P.zza G. Savonarola, 3</p>
+                <p>48022 Lugo (RA)</p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span>Italia</span>
+              <Phone className="h-4 w-4 text-primary shrink-0" />
+              <span>Tel./Fax +39 0545 30541</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Mail className="h-4 w-4 text-primary shrink-0" />
+              <a href="mailto:rifugi@cailugo.it" className="hover:text-foreground transition-colors">rifugi@cailugo.it</a>
+            </div>
+            <div className="flex items-start gap-2 pt-2 border-t border-border">
+              <AlertCircle className="h-4 w-4 text-accent mt-0.5 shrink-0" />
+              <div>
+                <p className="font-medium text-foreground">Per segnalazioni urgenti</p>
+                <a href="tel:+393346472474" className="hover:text-foreground transition-colors">+39 334 6472474</a>
+              </div>
             </div>
           </div>
         </div>
