@@ -18,6 +18,7 @@ import ChiSiamo from "./pages/ChiSiamo";
 import Contatti from "./pages/Contatti";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
+import CaiInfoPage from "./pages/CaiInfoPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
