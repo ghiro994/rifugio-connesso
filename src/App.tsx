@@ -45,6 +45,7 @@ const App = () => (
               <Route path="/contatti" element={<Contatti />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/cookie" element={<CookiePolicy />} />
+              <Route path="/info/:slug" element={<CaiInfoPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
