@@ -33,7 +33,7 @@ const Navbar = () => {
     >
       <div className="container-page flex items-center justify-between h-20">
         <Link to="/" className="flex items-center gap-3 text-foreground">
-          <img src={caiLogo} alt="Stemma CAI - Club Alpino Italiano" className="h-12 w-auto shrink-0" />
+          <img src={caiLogo} alt="Stemma CAI - Club Alpino Italiano" className="h-[3.6rem] w-auto shrink-0" />
           <div className="flex flex-col leading-tight">
             <span className="font-heading text-lg md:text-xl">Rifugi e Bivacchi d'Italia</span>
             <span className="text-xs text-muted-foreground">Sezione di Lugo di Romagna</span>
