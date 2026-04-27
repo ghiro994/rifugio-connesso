@@ -8,11 +8,16 @@ const Footer = () => (
         <div className="space-y-3">
           <div className="flex items-center gap-2 font-heading text-xl">
             <Mountain className="h-5 w-5" />
-            Rifugi & Bivacchi
+            Rifugi e Bivacchi d'Italia
           </div>
-          <p className="text-sm opacity-70">
-            Il portale dei rifugi italiani. Annunci di lavoro stagionale e archivio dei rifugi e bivacchi in Italia.
-          </p>
+          <div className="text-sm opacity-70 space-y-0.5">
+            <p>Sezione di Lugo di Romagna</p>
+            <p>P.zza G. Savonarola, 3</p>
+            <p>48022 Lugo (RA)</p>
+            <p>Tel./Fax +39 0545 30541</p>
+            <p><a href="mailto:rifugi@cailugo.it" className="hover:opacity-100">rifugi@cailugo.it</a></p>
+            <p className="pt-1">Segnalazioni urgenti: <a href="tel:+393346472474" className="hover:opacity-100">+39 334 6472474</a></p>
+          </div>
         </div>
         <div>
           <h4 className="font-heading text-lg mb-3">Lavoro</h4>
