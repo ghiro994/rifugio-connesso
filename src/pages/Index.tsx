@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Briefcase, Search, Mountain, ArrowRight, Users, CheckCircle, Clock } from 'lucide-react';
+import { Briefcase, Search, ArrowRight, Users, CheckCircle, Clock } from 'lucide-react';
 import heroImage from '@/assets/hero-mountains.jpg';
 import AnnouncementCard from '@/components/AnnouncementCard';
-import RifugioCard from '@/components/RifugioCard';
 import { supabase } from '@/integrations/supabase/client';
-import { getRifugi } from '@/lib/store';
 import type { Tables } from '@/integrations/supabase/types';
 
 const Index = () => {
   const [latestAnnouncements, setLatestAnnouncements] = useState<Tables<'announcements'>[]>([]);
-  const rifugi = getRifugi().slice(0, 3);
 
   useEffect(() => {
     const fetchLatest = async () => {
