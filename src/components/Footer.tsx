@@ -30,7 +30,6 @@ const Footer = () => (
         <div>
           <h4 className="font-heading text-lg mb-3">Esplora</h4>
           <ul className="space-y-2 text-sm opacity-70">
-            <li><Link to="/rifugi" className="hover:opacity-100 transition-opacity">Rifugi e Bivacchi</Link></li>
             <li><Link to="/chi-siamo" className="hover:opacity-100 transition-opacity">Chi siamo</Link></li>
             <li><Link to="/contatti" className="hover:opacity-100 transition-opacity">Contatti</Link></li>
           </ul>
@@ -42,11 +41,10 @@ const Footer = () => (
             <li><Link to="/cookie" className="hover:opacity-100 transition-opacity">Cookie Policy</Link></li>
             <li><Link to="/login" className="hover:opacity-100 transition-opacity">Login</Link></li>
           </ul>
-          <p className="text-sm opacity-50 mt-4">info@rifugiebivacchi.it</p>
         </div>
       </div>
       <div className="border-t border-primary-foreground/20 mt-8 pt-6 text-center text-sm opacity-50">
-        © {new Date().getFullYear()} Rifugi & Bivacchi — Tutti i diritti riservati
+        © {new Date().getFullYear()} Rifugi e Bivacchi d'Italia — Sezione CAI Lugo di Romagna
       </div>
     </div>
   </footer>
