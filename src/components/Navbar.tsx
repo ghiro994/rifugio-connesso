@@ -16,11 +16,14 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur border-b border-border">
-      <div className="container-page flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center gap-2 font-heading text-xl text-foreground">
-          <Mountain className="h-6 w-6 text-primary" />
-          <span>Rifugi & Bivacchi</span>
+    <nav className="sticky top-0 z-50 bg-gradient-to-r from-mountain-green-light via-card to-mountain-green-light bg-cover bg-center backdrop-blur border-b-2 border-primary/30 shadow-sm" style={{ backgroundImage: `linear-gradient(to right, hsl(var(--card)/0.92), hsl(var(--card)/0.85)), url(${heroImage})` }}>
+      <div className="container-page flex items-center justify-between h-20">
+        <Link to="/" className="flex items-center gap-3 text-foreground">
+          <Mountain className="h-8 w-8 text-primary shrink-0" />
+          <div className="flex flex-col leading-tight">
+            <span className="font-heading text-lg md:text-xl">Rifugi e Bivacchi d'Italia</span>
+            <span className="text-xs text-muted-foreground">Sezione di Lugo di Romagna</span>
+          </div>
         </Link>
 
         {/* Desktop */}
