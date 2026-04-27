@@ -18,6 +18,7 @@ import ChiSiamo from "./pages/ChiSiamo";
 import Contatti from "./pages/Contatti";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
+import CaiInfoPage from "./pages/CaiInfoPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/contatti" element={<Contatti />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
               <Route path="/cookie" element={<CookiePolicy />} />
+              <Route path="/info/:slug" element={<CaiInfoPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

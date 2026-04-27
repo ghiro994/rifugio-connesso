@@ -30,6 +30,10 @@ const Footer = () => (
         <div>
           <h4 className="font-heading text-lg mb-3">Esplora</h4>
           <ul className="space-y-2 text-sm opacity-70">
+            <li><Link to="/info/tipologie" className="hover:opacity-100 transition-opacity">Tipologie</Link></li>
+            <li><Link to="/info/storia" className="hover:opacity-100 transition-opacity">Storia</Link></li>
+            <li><Link to="/info/regolamenti" className="hover:opacity-100 transition-opacity">Regolamenti</Link></li>
+            <li><Link to="/info/tariffe" className="hover:opacity-100 transition-opacity">Tariffe</Link></li>
             <li><Link to="/chi-siamo" className="hover:opacity-100 transition-opacity">Chi siamo</Link></li>
             <li><Link to="/contatti" className="hover:opacity-100 transition-opacity">Contatti</Link></li>
           </ul>
