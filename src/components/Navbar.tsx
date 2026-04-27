@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
-import { Mountain, Menu, X, Settings, ChevronDown } from 'lucide-react';
+import { Menu, X, Settings, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import heroImage from '@/assets/hero-mountains.jpg';
+import caiLogo from '@/assets/cai-logo.png';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,7 +33,7 @@ const Navbar = () => {
     >
       <div className="container-page flex items-center justify-between h-20">
         <Link to="/" className="flex items-center gap-3 text-foreground">
-          <Mountain className="h-8 w-8 text-primary shrink-0" />
+          <img src={caiLogo} alt="Stemma CAI - Club Alpino Italiano" className="h-12 w-auto shrink-0" />
           <div className="flex flex-col leading-tight">
             <span className="font-heading text-lg md:text-xl">Rifugi e Bivacchi d'Italia</span>
             <span className="text-xs text-muted-foreground">Sezione di Lugo di Romagna</span>
