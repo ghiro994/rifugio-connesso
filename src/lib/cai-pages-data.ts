@@ -15,6 +15,52 @@ export type CaiPage = {
 };
 
 export const caiPages: Record<string, CaiPage> = {
+  'cosa-trovi': {
+    slug: 'cosa-trovi',
+    title: 'Cosa trovi nel sito',
+    intro:
+      "Una guida ai contenuti e ai servizi disponibili nel portale dei rifugi e bivacchi italiani.",
+    blocks: [
+      {
+        type: 'paragraph',
+        text:
+          "Questo servizio consente l'accesso a informazioni su tutti i rifugi e bivacchi presenti sulle montagne italiane, permettendone, qualora siano disponibili, anche la visione della fotografia e della carta geografica della zona di ubicazione.",
+      },
+      {
+        type: 'paragraph',
+        text:
+          "La pagina della ricerca consente molteplici possibilità di accesso ai dati. Con il servizio prenotazione rifugi è possibile riservare i posti nei rifugi direttamente dal sito.",
+      },
+      {
+        type: 'paragraph',
+        text:
+          "Per i rifugi del CAI si trova il regolamento e il tariffario vigente, così come per i rifugi dell'Alpenverein Suedtirol. Anche per le singole strutture private sono riportate le tariffe, se a noi note. Inoltre links alle home pages dei rifugi, accessi e itinerari, bibliografia e cartografia.",
+      },
+      {
+        type: 'paragraph',
+        text:
+          "Ci scusiamo per la possibile incompletezza e inesattezza dei dati riportati. Il servizio è in continuo perfezionamento e ampliamento. Lo scopo è di fornire notizie sempre più aggiornate.",
+      },
+      { type: 'heading', text: 'Contribuisci' },
+      {
+        type: 'paragraph',
+        text:
+          "Invitiamo tutti coloro che si trovano in possesso di dati e fotografie utili al miglioramento del servizio a fornirceli inviandoci una email all'indirizzo rifugi@cailugo.it o scrivendo a:",
+      },
+      {
+        type: 'paragraph',
+        text:
+          "CAI Lugo di Romagna — Piazza G. Savonarola 3 — 48022 Lugo (RA) — Italy — Tel./Fax 0545/30541",
+      },
+      {
+        type: 'paragraph',
+        text:
+          "Chi fosse interessato a questo servizio può inserire nella propria pagina un link che rimandi al nostro sito.",
+      },
+    ],
+  },
+
+
   tipologie: {
     slug: 'tipologie',
     title: 'Tipologie',
