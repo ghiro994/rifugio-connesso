@@ -30,7 +30,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Navbar />
-          <main className="min-h-screen">
+          <main>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/offro-lavoro" element={<OffroLavoro />} />
