@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Mountain, Menu, X, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import heroImage from '@/assets/hero-mountains.jpg';
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
