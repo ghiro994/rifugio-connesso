@@ -416,32 +416,6 @@ export const caiPages: Record<string, CaiPage> = {
     ],
   },
 
-  legenda: {
-    slug: 'legenda',
-    title: 'Legenda',
-    breadcrumb: 'Rifugi e Bivacchi',
-    intro: 'Significato dei simboli e delle icone utilizzate nelle schede dei rifugi.',
-    blocks: [
-      {
-        type: 'list',
-        items: [
-          'Doccia',
-          'Acqua calda',
-          'Sconti soci CAI',
-          'Acqua nei pressi',
-          'Sito web',
-          'Coperte',
-          'Stufa / camino / focolare',
-          'Stoviglie',
-          'Materiale cucina',
-          'Apertura su richiesta',
-          'Accesso in auto',
-          'Accesso con impianti',
-          'Prenotazione on-line',
-        ],
-      },
-    ],
-  },
 };
 
 export const caiPageList = Object.values(caiPages);
