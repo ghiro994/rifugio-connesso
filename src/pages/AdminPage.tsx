@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
-import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet } from 'lucide-react';
+import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet, Eye } from 'lucide-react';
 import { read, utils } from 'xlsx';
+import AnnouncementDetailDialog from '@/components/AnnouncementDetailDialog';
 
 type Announcement = Tables<'announcements'>;
 type Status = Announcement['status'];
@@ -27,6 +28,8 @@ const AdminPage = () => {
   const { user, isAdmin, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [selected, setSelected] = useState<Announcement | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<{
@@ -245,6 +248,9 @@ const AdminPage = () => {
                   <td className="py-3 pr-4 text-muted-foreground">{new Date(a.created_at).toLocaleDateString('it-IT')}</td>
                   <td className="py-3">
                     <div className="flex gap-1">
+                      <button onClick={() => { setSelected(a); setDetailOpen(true); }} className="p-1.5 rounded-md hover:bg-secondary text-foreground" title="Visualizza annuncio completo">
+                        <Eye className="h-4 w-4" />
+                      </button>
                       {a.status !== 'pubblicato' && (
                         <button onClick={() => handleStatus(a.id, 'pubblicato')} className="p-1.5 rounded-md hover:bg-primary/10 text-primary" title="Approva">
                           <Check className="h-4 w-4" />
@@ -266,6 +272,13 @@ const AdminPage = () => {
           </table>
         </div>
       )}
+
+      <AnnouncementDetailDialog
+        announcement={selected}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        showPrivateContacts
+      />
     </div>
   );
 };
