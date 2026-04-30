@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, RefreshCw } from 'lucide-react';
 import AnnouncementCard from '@/components/AnnouncementCard';
 import { supabase } from '@/integrations/supabase/client';
 import { REGIONS, ROLES, SEASONS } from '@/lib/types';
@@ -11,19 +11,44 @@ const CercoLavoro = () => {
   const [role, setRole] = useState('');
   const [season, setSeason] = useState('');
   const [announcements, setAnnouncements] = useState<Tables<'announcements'>[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAnnouncements = async () => {
+  const fetchAnnouncements = useCallback(async (attempt = 0) => {
+    setLoading(true);
+    setError(null);
+    try {
       let query = supabase.from('announcements').select('*')
         .eq('type', 'cerco').eq('status', 'pubblicato').order('created_at', { ascending: false });
       if (region) query = query.eq('region', region);
       if (role) query = query.eq('desired_role', role);
       if (season) query = query.eq('season', season);
-      const { data } = await query;
+      const { data, error } = await query;
+      if (error) throw error;
       setAnnouncements(data || []);
-    };
-    fetchAnnouncements();
+    } catch (e) {
+      console.error('[CercoLavoro] fetch failed', e);
+      if (attempt < 2) {
+        setTimeout(() => fetchAnnouncements(attempt + 1), 800 * (attempt + 1));
+        return;
+      }
+      setError('Impossibile caricare gli annunci. Riprova.');
+    } finally {
+      setLoading(false);
+    }
   }, [region, role, season]);
+
+  useEffect(() => {
+    fetchAnnouncements();
+    const onFocus = () => fetchAnnouncements();
+    const onVisibility = () => { if (document.visibilityState === 'visible') fetchAnnouncements(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [fetchAnnouncements]);
 
   return (
     <div className="container-page py-10">
