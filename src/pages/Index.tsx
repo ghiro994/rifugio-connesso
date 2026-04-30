@@ -94,7 +94,20 @@ const Index = () => {
               Tutti gli annunci <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-          {latestAnnouncements.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="card-mountain animate-pulse h-48 bg-muted/50" />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground mb-3">{error}</p>
+              <button onClick={() => fetchLatest()} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+                <RefreshCw className="h-4 w-4" /> Riprova
+              </button>
+            </div>
+          ) : latestAnnouncements.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {latestAnnouncements.map((a) => (
                 <AnnouncementCard key={a.id} announcement={a} />
