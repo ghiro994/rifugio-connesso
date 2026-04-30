@@ -272,6 +272,13 @@ const AdminPage = () => {
           </table>
         </div>
       )}
+
+      <AnnouncementDetailDialog
+        announcement={selected}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        showPrivateContacts
+      />
     </div>
   );
 };
