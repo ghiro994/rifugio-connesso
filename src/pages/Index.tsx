@@ -1,47 +1,39 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Briefcase, Search, ArrowRight, Users, CheckCircle, Clock, RefreshCw } from 'lucide-react';
 import heroImage from '@/assets/hero-mountains.jpg';
 import AnnouncementCard from '@/components/AnnouncementCard';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublishedAnnouncements } from '@/lib/fetch-announcements';
 import type { Tables } from '@/integrations/supabase/types';
 
 const Index = () => {
   const [latestAnnouncements, setLatestAnnouncements] = useState<Tables<'announcements'>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchLatest = useCallback(async (attempt = 0) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data, error } = await supabase.from('announcements').select('*')
-        .eq('status', 'pubblicato').order('created_at', { ascending: false }).limit(3);
-      if (error) throw error;
-      setLatestAnnouncements(data || []);
-    } catch (e) {
-      console.error('[Index] fetchLatest failed', e);
-      if (attempt < 2) {
-        setTimeout(() => fetchLatest(attempt + 1), 800 * (attempt + 1));
-        return;
-      }
-      setError('Impossibile caricare gli annunci. Riprova.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    fetchLatest();
-    const onFocus = () => fetchLatest();
-    const onVisibility = () => { if (document.visibilityState === 'visible') fetchLatest(); };
-    window.addEventListener('focus', onFocus);
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      window.removeEventListener('focus', onFocus);
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, [fetchLatest]);
+    const ctrl = new AbortController();
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchPublishedAnnouncements({ limit: 3 }, ctrl.signal);
+        if (cancelled) return;
+        setLatestAnnouncements(data);
+      } catch (e) {
+        if (cancelled) return;
+        console.error('[Index] fetchLatest failed', e);
+        setError('Impossibile caricare gli annunci. Riprova.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; ctrl.abort(); };
+  }, [reloadKey]);
+
+  const reload = () => setReloadKey((k) => k + 1);
 
   return (
     <>
@@ -103,7 +95,7 @@ const Index = () => {
           ) : error ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-3">{error}</p>
-              <button onClick={() => fetchLatest()} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+              <button onClick={reload} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
                 <RefreshCw className="h-4 w-4" /> Riprova
               </button>
             </div>

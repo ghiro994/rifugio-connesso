@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, RefreshCw } from 'lucide-react';
 import AnnouncementCard from '@/components/AnnouncementCard';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublishedAnnouncements } from '@/lib/fetch-announcements';
 import { REGIONS, ROLES, SEASONS } from '@/lib/types';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -13,42 +13,35 @@ const OffroLavoro = () => {
   const [announcements, setAnnouncements] = useState<Tables<'announcements'>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchAnnouncements = useCallback(async (attempt = 0) => {
-    setLoading(true);
-    setError(null);
-    try {
-      let query = supabase.from('announcements').select('*')
-        .eq('type', 'offro').eq('status', 'pubblicato').order('created_at', { ascending: false });
-      if (region) query = query.eq('region', region);
-      if (role) query = query.eq('role_sought', role);
-      if (season) query = query.eq('season', season);
-      const { data, error } = await query;
-      if (error) throw error;
-      setAnnouncements(data || []);
-    } catch (e) {
-      console.error('[OffroLavoro] fetch failed', e);
-      if (attempt < 2) {
-        setTimeout(() => fetchAnnouncements(attempt + 1), 800 * (attempt + 1));
-        return;
-      }
-      setError('Impossibile caricare gli annunci. Riprova.');
-    } finally {
-      setLoading(false);
-    }
-  }, [region, role, season]);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    fetchAnnouncements();
-    const onFocus = () => fetchAnnouncements();
-    const onVisibility = () => { if (document.visibilityState === 'visible') fetchAnnouncements(); };
-    window.addEventListener('focus', onFocus);
-    document.addEventListener('visibilitychange', onVisibility);
-    return () => {
-      window.removeEventListener('focus', onFocus);
-      document.removeEventListener('visibilitychange', onVisibility);
-    };
-  }, [fetchAnnouncements]);
+    const ctrl = new AbortController();
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchPublishedAnnouncements({
+          type: 'offro',
+          region: region || undefined,
+          role_sought: role || undefined,
+          season: season || undefined,
+        }, ctrl.signal);
+        if (cancelled) return;
+        setAnnouncements(data);
+      } catch (e) {
+        if (cancelled) return;
+        console.error('[OffroLavoro] fetch failed', e);
+        setError('Impossibile caricare gli annunci. Riprova.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; ctrl.abort(); };
+  }, [region, role, season, reloadKey]);
+
+  const reload = () => setReloadKey((k) => k + 1);
 
   return (
     <div className="container-page py-10">
@@ -84,7 +77,7 @@ const OffroLavoro = () => {
       ) : error ? (
         <div className="text-center py-12">
           <p className="text-muted-foreground mb-3">{error}</p>
-          <button onClick={() => fetchAnnouncements()} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+          <button onClick={reload} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
             <RefreshCw className="h-4 w-4" /> Riprova
           </button>
         </div>
