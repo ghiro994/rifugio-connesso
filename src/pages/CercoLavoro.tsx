@@ -77,7 +77,18 @@ const CercoLavoro = () => {
         </select>
       </div>
 
-      {announcements.length === 0 ? (
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4].map((i) => <div key={i} className="card-mountain animate-pulse h-48 bg-muted/50" />)}
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-3">{error}</p>
+          <button onClick={() => fetchAnnouncements()} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+            <RefreshCw className="h-4 w-4" /> Riprova
+          </button>
+        </div>
+      ) : announcements.length === 0 ? (
         <p className="text-center text-muted-foreground py-12">Nessun annuncio trovato con i filtri selezionati.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
