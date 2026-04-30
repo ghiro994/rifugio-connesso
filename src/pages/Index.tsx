@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Briefcase, Search, ArrowRight, Users, CheckCircle, Clock, RefreshCw } from 'lucide-react';
 import heroImage from '@/assets/hero-mountains.jpg';
 import AnnouncementCard from '@/components/AnnouncementCard';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublishedAnnouncements } from '@/lib/fetch-announcements';
 import type { Tables } from '@/integrations/supabase/types';
 
 const Index = () => {
@@ -13,16 +13,15 @@ const Index = () => {
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
+    const ctrl = new AbortController();
     let cancelled = false;
-    const run = async () => {
+    (async () => {
       setLoading(true);
       setError(null);
       try {
-        const { data, error } = await supabase.from('announcements').select('*')
-          .eq('status', 'pubblicato').order('created_at', { ascending: false }).limit(3);
+        const data = await fetchPublishedAnnouncements({ limit: 3 }, ctrl.signal);
         if (cancelled) return;
-        if (error) throw error;
-        setLatestAnnouncements(data || []);
+        setLatestAnnouncements(data);
       } catch (e) {
         if (cancelled) return;
         console.error('[Index] fetchLatest failed', e);
@@ -30,9 +29,8 @@ const Index = () => {
       } finally {
         if (!cancelled) setLoading(false);
       }
-    };
-    run();
-    return () => { cancelled = true; };
+    })();
+    return () => { cancelled = true; ctrl.abort(); };
   }, [reloadKey]);
 
   const reload = () => setReloadKey((k) => k + 1);

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, RefreshCw } from 'lucide-react';
 import AnnouncementCard from '@/components/AnnouncementCard';
-import { supabase } from '@/integrations/supabase/client';
+import { fetchPublishedAnnouncements } from '@/lib/fetch-announcements';
 import { REGIONS, ROLES, SEASONS } from '@/lib/types';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -16,20 +16,20 @@ const OffroLavoro = () => {
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
+    const ctrl = new AbortController();
     let cancelled = false;
-    const run = async () => {
+    (async () => {
       setLoading(true);
       setError(null);
       try {
-        let query = supabase.from('announcements').select('*')
-          .eq('type', 'offro').eq('status', 'pubblicato').order('created_at', { ascending: false });
-        if (region) query = query.eq('region', region);
-        if (role) query = query.eq('role_sought', role);
-        if (season) query = query.eq('season', season);
-        const { data, error } = await query;
+        const data = await fetchPublishedAnnouncements({
+          type: 'offro',
+          region: region || undefined,
+          role_sought: role || undefined,
+          season: season || undefined,
+        }, ctrl.signal);
         if (cancelled) return;
-        if (error) throw error;
-        setAnnouncements(data || []);
+        setAnnouncements(data);
       } catch (e) {
         if (cancelled) return;
         console.error('[OffroLavoro] fetch failed', e);
@@ -37,9 +37,8 @@ const OffroLavoro = () => {
       } finally {
         if (!cancelled) setLoading(false);
       }
-    };
-    run();
-    return () => { cancelled = true; };
+    })();
+    return () => { cancelled = true; ctrl.abort(); };
   }, [region, role, season, reloadKey]);
 
   const reload = () => setReloadKey((k) => k + 1);
