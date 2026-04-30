@@ -97,7 +97,7 @@ const Index = () => {
           ) : error ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-3">{error}</p>
-              <button onClick={() => fetchLatest()} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+              <button onClick={reload} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
                 <RefreshCw className="h-4 w-4" /> Riprova
               </button>
             </div>
