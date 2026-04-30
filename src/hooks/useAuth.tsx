@@ -19,9 +19,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const checkAdmin = async (userId: string) => {
-    const { data } = await supabase.rpc('has_role', { _user_id: userId, _role: 'admin' });
-    setIsAdmin(!!data);
+  const checkAdmin = async (userId: string, accessToken?: string) => {
+    try {
+      // Use REST fetch with timeout so the UI never hangs if supabase-js stalls.
+      const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+      const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/has_role`, {
+        method: 'POST',
+        signal: ctrl.signal,
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${accessToken || SUPABASE_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ _user_id: userId, _role: 'admin' }),
+      });
+      clearTimeout(timer);
+      if (!res.ok) {
+        console.error('[useAuth] has_role failed', res.status);
+        setIsAdmin(false);
+        return;
+      }
+      const data = await res.json();
+      setIsAdmin(!!data);
+    } catch (e) {
+      console.error('[useAuth] checkAdmin error', e);
+      setIsAdmin(false);
+    }
   };
 
   useEffect(() => {
@@ -30,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          await checkAdmin(session.user.id);
+          await checkAdmin(session.user.id, session.access_token);
         } else {
           setIsAdmin(false);
         }
@@ -42,7 +68,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkAdmin(session.user.id);
+        checkAdmin(session.user.id, session.access_token);
       }
       setLoading(false);
     });
