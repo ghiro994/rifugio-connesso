@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Briefcase, Search, ArrowRight, Users, CheckCircle, Clock } from 'lucide-react';
+import { Briefcase, Search, ArrowRight, Users, CheckCircle, Clock, RefreshCw } from 'lucide-react';
 import heroImage from '@/assets/hero-mountains.jpg';
 import AnnouncementCard from '@/components/AnnouncementCard';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,15 +8,40 @@ import type { Tables } from '@/integrations/supabase/types';
 
 const Index = () => {
   const [latestAnnouncements, setLatestAnnouncements] = useState<Tables<'announcements'>[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchLatest = useCallback(async (attempt = 0) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.from('announcements').select('*')
+        .eq('status', 'pubblicato').order('created_at', { ascending: false }).limit(3);
+      if (error) throw error;
+      setLatestAnnouncements(data || []);
+    } catch (e) {
+      console.error('[Index] fetchLatest failed', e);
+      if (attempt < 2) {
+        setTimeout(() => fetchLatest(attempt + 1), 800 * (attempt + 1));
+        return;
+      }
+      setError('Impossibile caricare gli annunci. Riprova.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchLatest = async () => {
-      const { data } = await supabase.from('announcements').select('*')
-        .eq('status', 'pubblicato').order('created_at', { ascending: false }).limit(3);
-      setLatestAnnouncements(data || []);
-    };
     fetchLatest();
-  }, []);
+    const onFocus = () => fetchLatest();
+    const onVisibility = () => { if (document.visibilityState === 'visible') fetchLatest(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [fetchLatest]);
 
   return (
     <>
@@ -69,7 +94,20 @@ const Index = () => {
               Tutti gli annunci <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
-          {latestAnnouncements.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="card-mountain animate-pulse h-48 bg-muted/50" />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground mb-3">{error}</p>
+              <button onClick={() => fetchLatest()} className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+                <RefreshCw className="h-4 w-4" /> Riprova
+              </button>
+            </div>
+          ) : latestAnnouncements.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {latestAnnouncements.map((a) => (
                 <AnnouncementCard key={a.id} announcement={a} />
