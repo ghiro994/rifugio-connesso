@@ -73,24 +73,24 @@ Deno.serve(async (req) => {
     const GOOGLE_DRIVE_API_KEY = Deno.env.get("GOOGLE_DRIVE_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const CRON_SECRET = Deno.env.get("BACKUP_CRON_SECRET");
-
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY non configurata");
-    if (!GOOGLE_DRIVE_API_KEY) throw new Error("GOOGLE_DRIVE_API_KEY non configurata (collega Google Drive)");
-
-    // Auth: cron secret OPPURE utente admin
+    // Auth: cron secret (letto dal DB) OPPURE utente admin
     const cronHeader = req.headers.get("x-cron-secret");
     let authorized = false;
-    if (CRON_SECRET && cronHeader && cronHeader === CRON_SECRET) {
-      authorized = true;
-    } else {
+    const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    if (cronHeader) {
+      const { data: secret } = await adminClient.rpc("get_backup_cron_secret");
+      if (secret && cronHeader === secret) {
+        authorized = true;
+      }
+    }
+    if (!authorized) {
       const authHeader = req.headers.get("Authorization");
       if (authHeader) {
-        const supa = createClient(SUPABASE_URL, SERVICE_ROLE);
         const token = authHeader.replace("Bearer ", "");
-        const { data: { user } } = await supa.auth.getUser(token);
+        const { data: { user } } = await adminClient.auth.getUser(token);
         if (user) {
-          const { data: roles } = await supa.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle();
+          const { data: roles } = await adminClient.from("user_roles").select("role").eq("user_id", user.id).eq("role", "admin").maybeSingle();
           if (roles) authorized = true;
         }
       }
@@ -98,6 +98,8 @@ Deno.serve(async (req) => {
     if (!authorized) {
       return new Response(JSON.stringify({ error: "Non autorizzato" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+
+
 
     // Fetch dati
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
