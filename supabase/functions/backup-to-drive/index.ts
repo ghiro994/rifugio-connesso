@@ -79,8 +79,8 @@ Deno.serve(async (req) => {
     const adminClient = createClient(SUPABASE_URL, SERVICE_ROLE);
 
     if (cronHeader) {
-      const { data: cronSecret } = await adminClient.schema("app_internal" as any).from("config").select("value").eq("key", "backup_cron_secret").maybeSingle();
-      if (cronSecret && cronHeader === (cronSecret as any).value) {
+      const { data: secret } = await adminClient.rpc("get_backup_cron_secret");
+      if (secret && cronHeader === secret) {
         authorized = true;
       }
     }
@@ -98,6 +98,7 @@ Deno.serve(async (req) => {
     if (!authorized) {
       return new Response(JSON.stringify({ error: "Non autorizzato" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
+
 
 
     // Fetch dati
