@@ -239,24 +239,6 @@ const AdminPage = () => {
           </div>
         )}
       </section>
-          <div className="mt-4 p-4 rounded-lg bg-secondary text-sm space-y-1">
-            <p><strong>Totale righe:</strong> {uploadResult.total}</p>
-            <p className="text-primary"><strong>Inseriti:</strong> {uploadResult.inserted}</p>
-            <p className="text-accent"><strong>Aggiornati:</strong> {uploadResult.updated}</p>
-            {uploadResult.skipped > 0 && (
-              <p className="text-destructive"><strong>Saltati:</strong> {uploadResult.skipped}</p>
-            )}
-            {uploadResult.errors.length > 0 && (
-              <div className="mt-2">
-                <p className="font-medium text-destructive">Errori:</p>
-                <ul className="list-disc list-inside text-destructive">
-                  {uploadResult.errors.map((e, i) => <li key={i}>{e}</li>)}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </section>
 
       {/* Announcements Moderation */}
       <h2 className="heading-card mb-4">Moderazione annunci</h2>
