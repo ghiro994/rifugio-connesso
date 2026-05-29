@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
-import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet, Eye } from 'lucide-react';
+import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet, Eye, CloudUpload } from 'lucide-react';
 import { read, utils } from 'xlsx';
 import AnnouncementDetailDialog from '@/components/AnnouncementDetailDialog';
 
