@@ -36,6 +36,24 @@ const AdminPage = () => {
     inserted: number; updated: number; skipped: number; errors: string[]; total: number;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [backupRunning, setBackupRunning] = useState(false);
+  const [backupResult, setBackupResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  const handleBackup = async () => {
+    if (backupRunning) return;
+    setBackupRunning(true);
+    setBackupResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('backup-to-drive', { body: {} });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setBackupResult({ ok: true, message: `Backup completato: cartella "${data.folder}" — ${data.counts.announcements} annunci, ${data.counts.rifugi} rifugi.` });
+    } catch (e) {
+      setBackupResult({ ok: false, message: e instanceof Error ? e.message : 'Errore sconosciuto' });
+    } finally {
+      setBackupRunning(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
