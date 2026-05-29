@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import type { Tables } from '@/integrations/supabase/types';
-import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet, Eye } from 'lucide-react';
+import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet, Eye, CloudUpload } from 'lucide-react';
 import { read, utils } from 'xlsx';
 import AnnouncementDetailDialog from '@/components/AnnouncementDetailDialog';
 
@@ -36,6 +36,24 @@ const AdminPage = () => {
     inserted: number; updated: number; skipped: number; errors: string[]; total: number;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [backupRunning, setBackupRunning] = useState(false);
+  const [backupResult, setBackupResult] = useState<{ ok: boolean; message: string } | null>(null);
+
+  const handleBackup = async () => {
+    if (backupRunning) return;
+    setBackupRunning(true);
+    setBackupResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('backup-to-drive', { body: {} });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setBackupResult({ ok: true, message: `Backup completato: cartella "${data.folder}" — ${data.counts.announcements} annunci, ${data.counts.rifugi} rifugi.` });
+    } catch (e) {
+      setBackupResult({ ok: false, message: e instanceof Error ? e.message : 'Errore sconosciuto' });
+    } finally {
+      setBackupRunning(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && (!user || !isAdmin)) {
@@ -196,22 +214,28 @@ const AdminPage = () => {
           </label>
         </div>
 
-        {uploadResult && (
-          <div className="mt-4 p-4 rounded-lg bg-secondary text-sm space-y-1">
-            <p><strong>Totale righe:</strong> {uploadResult.total}</p>
-            <p className="text-primary"><strong>Inseriti:</strong> {uploadResult.inserted}</p>
-            <p className="text-accent"><strong>Aggiornati:</strong> {uploadResult.updated}</p>
-            {uploadResult.skipped > 0 && (
-              <p className="text-destructive"><strong>Saltati:</strong> {uploadResult.skipped}</p>
-            )}
-            {uploadResult.errors.length > 0 && (
-              <div className="mt-2">
-                <p className="font-medium text-destructive">Errori:</p>
-                <ul className="list-disc list-inside text-destructive">
-                  {uploadResult.errors.map((e, i) => <li key={i}>{e}</li>)}
-                </ul>
-              </div>
-            )}
+      </section>
+
+      {/* Backup su Google Drive */}
+      <section className="mb-12 card-mountain">
+        <div className="flex items-center gap-3 mb-4">
+          <CloudUpload className="h-5 w-5 text-primary" />
+          <h2 className="heading-card">Backup su Google Drive</h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          Esporta annunci e rifugi (JSON + CSV) nella cartella <strong>Backup Rifugi CAI Lugo / data odierna</strong> del Google Drive collegato. Il backup viene eseguito automaticamente ogni notte alle 03:00.
+        </p>
+        <button
+          onClick={handleBackup}
+          disabled={backupRunning}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${backupRunning ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground hover:opacity-90'}`}
+        >
+          <CloudUpload className="h-4 w-4" />
+          {backupRunning ? 'Backup in corso...' : 'Esegui backup ora'}
+        </button>
+        {backupResult && (
+          <div className={`mt-4 p-4 rounded-lg text-sm ${backupResult.ok ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'}`}>
+            {backupResult.message}
           </div>
         )}
       </section>
