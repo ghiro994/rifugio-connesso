@@ -214,7 +214,31 @@ const AdminPage = () => {
           </label>
         </div>
 
-        {uploadResult && (
+      </section>
+
+      {/* Backup su Google Drive */}
+      <section className="mb-12 card-mountain">
+        <div className="flex items-center gap-3 mb-4">
+          <CloudUpload className="h-5 w-5 text-primary" />
+          <h2 className="heading-card">Backup su Google Drive</h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          Esporta annunci e rifugi (JSON + CSV) nella cartella <strong>Backup Rifugi CAI Lugo / data odierna</strong> del Google Drive collegato. Il backup viene eseguito automaticamente ogni notte alle 03:00.
+        </p>
+        <button
+          onClick={handleBackup}
+          disabled={backupRunning}
+          className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${backupRunning ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground hover:opacity-90'}`}
+        >
+          <CloudUpload className="h-4 w-4" />
+          {backupRunning ? 'Backup in corso...' : 'Esegui backup ora'}
+        </button>
+        {backupResult && (
+          <div className={`mt-4 p-4 rounded-lg text-sm ${backupResult.ok ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'}`}>
+            {backupResult.message}
+          </div>
+        )}
+      </section>
           <div className="mt-4 p-4 rounded-lg bg-secondary text-sm space-y-1">
             <p><strong>Totale righe:</strong> {uploadResult.total}</p>
             <p className="text-primary"><strong>Inseriti:</strong> {uploadResult.inserted}</p>
