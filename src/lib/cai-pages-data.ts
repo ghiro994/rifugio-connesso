@@ -259,75 +259,21 @@ export const caiPages: Record<string, CaiPage> = {
     slug: 'regolamenti',
     title: 'Regolamenti',
     breadcrumb: 'I rifugi del CAI',
-    intro: 'Estratto del Regolamento Generale Rifugi (approv. 1992, aggiorn. 1997).',
     blocks: [
-      { type: 'heading', text: 'Art. 1 — Finalità, definizione, identificazione' },
       {
         type: 'paragraph',
         text:
-          "In relazione alle specifiche caratteristiche costruttive e funzionali connesse alla funzionalità alpinistica, le strutture di proprietà del Sodalizio o delle singole Sezioni o dalle stesse gestite sono definite ed indicate come:",
-      },
-      {
-        type: 'list',
-        items: [
-          "a) RIFUGI - RIFUGI ALPINI: strutture ricettive sorte per rispondere alle esigenze di carattere alpinistico ed escursionistico, gestite o custodite ed aperte al pubblico stagionalmente.",
-          "b) PUNTI DI APPOGGIO: strutture fisse ricavate con modesti interventi di restauro di edifici tipici dell'ambiente montano (casere, baite, malghe non più utilizzate). Raggiungibili esclusivamente a piedi.",
-          "c) BIVACCHI FISSI: costruzioni prefabbricate, monolocali di modeste dimensioni con capienza non superiore ai 15 posti, ubicati nelle zone più elevate. Incustoditi e aperti in permanenza.",
-          "d) RICOVERI: strutture incustodite e aperte in permanenza, senza alcuna attrezzatura. Utilizzate per sosta di emergenza.",
-          "e) CAPANNA SOCIALE: ricavata da immobile esistente, con disponibilità in via esclusiva da parte di una Sezione. Generalmente chiusa, chiavi reperibili presso la Sezione.",
-        ],
-      },
-      { type: 'heading', text: 'Art. 4 — Custodia' },
-      {
-        type: 'paragraph',
-        text:
-          "Tutti i rifugi si intendono normalmente custoditi durante i previsti periodi stagionali di apertura; negli altri periodi restano agibili e sempre aperti — ove esistono — i «locali invernali», convenientemente dotati per un ricovero di emergenza. I ricoveri, i bivacchi ed i punti di appoggio in genere si intendono sempre aperti ed atti a permettere il pernottamento di fortuna.",
-      },
-      { type: 'heading', text: 'Art. 9 — Attrezzatura pronto soccorso' },
-      {
-        type: 'paragraph',
-        text:
-          "Le Sezioni devono dotare i loro rifugi di una cassetta di «Pronto soccorso e medicazione» costantemente aggiornata, nonché di una barella di soccorso e, in caso di apertura invernale, di pale e sonde da valanga. I rifugi debbono disporre, nelle immediate vicinanze, di una piazzola idonea all'atterraggio di elicotteri in azione di soccorso.",
-      },
-      { type: 'heading', text: 'Art. 11 — Apertura stagionale dei rifugi' },
-      {
-        type: 'paragraph',
-        text:
-          "In relazione all'andamento stagionale ed alla situazione dei luoghi, d'intesa con il Gestore/Custode, la Sezione fissa il periodo di apertura stagionale del rifugio. Al fine di facilitare l'individuazione del rifugio, il Gestore/Custode ha l'obbligo di esporre dall'alba al tramonto la bandiera nazionale, oppure in caso di scarsa visibilità tenere accesa una luce esterna.",
-      },
-      { type: 'heading', text: 'Art. 12 — Prenotazioni pernottamenti' },
-      {
-        type: 'paragraph',
-        text:
-          "Le prenotazioni per i pernottamenti non possono coprire l'intera capacità ricettiva del rifugio e si considerano valide solo se accettate. Restano valide — salvo patto contrario — sino alle ore 18:00, dopodiché i posti saranno assegnati seguendo l'ordine di arrivo. Resta salvo il diritto di precedenza, a titolo gratuito, per gli infortunati ed i componenti delle squadre del Corpo Nazionale Soccorso Alpino in azione di soccorso.",
+          "Il Regolamento Generale Rifugi del CAI stabilisce le norme per una corretta frequentazione della montagna. Le strutture offrono ristoro, pernottamento e supporto per il soccorso, garantendo ai soci tariffe agevolate e precedenza.",
       },
       {
         type: 'paragraph',
         text:
-          "Nei bivacchi e nei rifugi non custoditi è vietata una permanenza prolungata se non motivata da condizioni atmosferiche tali da impedire il prosieguo dell'ascensione o il ritorno a valle.",
-      },
-      { type: 'heading', text: 'Art. 13 — Riunioni e pubblicità' },
-      {
-        type: 'paragraph',
-        text:
-          "Le riunioni nei rifugi debbono essere autorizzate dalle Sezioni di appartenenza. All'interno dei rifugi è assolutamente vietata l'esposizione di cartelli pubblicitari, manifesti, giornali murali e simili, se non stampati a cura del CAI, nonché la vendita di oggetti non attinenti all'attività del Sodalizio. È permesso esporre soltanto quadri, sculture, fotografie, disegni di interesse alpinistico.",
-      },
-      { type: 'heading', text: 'Art. 14 — Tariffario' },
-      {
-        type: 'paragraph',
-        text:
-          "A ciascuna categoria di rifugi corrisponde un apposito \"Tariffario stagionale\", comprendente quote fissate dalla Commissione centrale rifugi ed opere alpine e prezzi stabiliti dalle Sezioni di appartenenza dei rifugi. Il tariffario, firmato dal Presidente della Sezione, deve essere obbligatoriamente affisso in ogni rifugio in posizione di immediata visione.",
-      },
-      { type: 'heading', text: 'Art. 15 — Comportamento nei rifugi' },
-      {
-        type: 'paragraph',
-        text:
-          "Chi entra in un rifugio deve ricordare che è ospite del Club Alpino Italiano: sappia dunque comportarsi come tale e regoli la sua condotta in modo da non recare disturbo agli altri. Non chieda più di quello che il rifugio (in quanto tale) e il Gestore/Custode possono offrire.",
+          "Il regolamento è consultabile insieme alla documentazione ufficiale del Club Alpino Italiano:",
       },
       {
-        type: 'paragraph',
-        text:
-          "Il Gestore/Custode deve ricordare che il rifugio del CAI è la casa degli alpinisti: sappia renderla ospitale ed accogliente, sia cordiale ed imparziale con tutti. Dalle ore 22:00 alle ore 6:00 deve far osservare assoluto silenzio. Nei rifugi muniti d'impianto d'illuminazione dalle ore 22:00 deve essere tenuto acceso solo il \"notturno\".",
+        type: 'link',
+        href: 'https://www.cai.it/documentazione-rifugi-e-bivacchi/',
+        label: 'Documentazione rifugi e bivacchi — cai.it',
       },
     ],
   },
@@ -337,9 +283,9 @@ export const caiPages: Record<string, CaiPage> = {
     title: "I rifugi dell'AVS",
     breadcrumb: 'I rifugi del CAI',
     intro:
-      "Come i rifugi del CAI, anche i rifugi dell'Alpenverein Suedtirol sono soggetti a un regolamento generale e sono condotti e amministrati secondo criteri simili. Anche per essi sono previsti una divisione in categorie e prezzi fissi, che tendono ad avvicinarsi a quelli praticati nei rifugi del CAI.",
+      "Come i rifugi del CAI, anche i rifugi dell'Alpenverein Suedtirol sono soggetti a un regolamento generale e sono condotti e amministrati secondo criteri simili. Anche per essi è prevista una suddivisione in categorie.",
     blocks: [
-      { type: 'heading', text: 'Categorie dei rifugi dell\'Alpenverein Suedtirol' },
+      { type: 'heading', text: "Categorie dei rifugi dell'Alpenverein Suedtirol" },
       {
         type: 'list',
         items: [
@@ -348,77 +294,53 @@ export const caiPages: Record<string, CaiPage> = {
           "O — Alta: Gran Pilastro/Hochfeiler, Martello/Marteller, Oberettes, Vedrette di Ries-F.lla Valfredda/Rieserferner-Gänsebichl Joch, Vipiteno/Sterzinger",
         ],
       },
-      { type: 'heading', text: 'Tariffario AVS (in Euro) — Pernottamento' },
-      {
-        type: 'paragraph',
-        text:
-          "Camerata/Cuccetta — Non soci: U 17,00 / M 18,00 / O 21,00. Soci A: 8,50 / 9,00 / 10,50. Soci C: 3,50 / 3,70 / 3,70.",
-      },
-      {
-        type: 'paragraph',
-        text:
-          "Camera/Letto — Non soci: U 21,00 / M 22,00 / O 23,00. Soci A: 10,50 / 11,00 / 12,00. Soci C: 6,50 / 6,50 / 6,50.",
-      },
-      { type: 'heading', text: 'Consumazioni' },
-      {
-        type: 'paragraph',
-        text: "Colazione: U 5,50 / M 6,00 / O 6,20. Piatto alpinistico: U 10,50 / M 11,00 / O 11,50.",
-      },
       { type: 'heading', text: 'Note' },
       {
         type: 'list',
         items: [
-          "È d'obbligo l'uso del sacco-lenzuolo (100% cotone) in tutti i rifugi. Può essere acquistato presso i rifugi (Euro 10,50).",
-          "I soci godono di uno sconto del 10% su ogni consumazione.",
-          "Per i bambini sconto del 30% sul piatto alpinistico.",
-          "I non soci che intendono consumare anche parzialmente cibi propri sono tenuti al pagamento di Euro 2,00.",
+          "È d'obbligo l'uso del sacco-lenzuolo (100% cotone) in tutti i rifugi. Può essere acquistato direttamente presso le strutture.",
+          "I soci godono di agevolazioni su pernottamenti e consumazioni.",
+          "Per informazioni aggiornate su tariffe e condizioni si rimanda al sito ufficiale dell'Alpenverein Südtirol.",
         ],
+      },
+      {
+        type: 'link',
+        href: 'https://www.alpenverein.it/',
+        label: 'Sito ufficiale Alpenverein Südtirol',
       },
     ],
   },
 
   tariffe: {
     slug: 'tariffe',
-    title: 'Tariffe',
+    title: 'Tariffario Rifugi CAI 2026',
     breadcrumb: 'I rifugi del CAI',
-    intro: 'Tariffario dei rifugi CAI per la stagione 2015 (01/06/2015 — 31/05/2016).',
+    intro:
+      "Tariffe ufficiali dei rifugi del Club Alpino Italiano in vigore dall'8 gennaio 2026 al 10 gennaio 2027.",
     blocks: [
-      { type: 'heading', text: 'Pernottamento (Soci / Non Soci)' },
-      {
-        type: 'list',
-        items: [
-          "Posto letto con materasso e coperte — Cat. A/B: 10,00 / 20,00 € — Cat. C: 10,00 / 20,00 € — Cat. D: 11,00 / 22,00 € — Cat. E: 13,00 / 26,00 € — Regina Margherita: 15,00 / 30,00 €",
-          "Posto letto in cameretta fino a 4 posti — Cat. A/B-C: 12,00 / 24,00 € — Cat. D: 13,00 / 26,00 € — Cat. E: 15,00 / 30,00 €",
-          "Posto emergenza — Cat. C-D: 3,00 / 6,00 € — Cat. E: 4,00 / 8,00 €",
-          "Pernottamento Soci Giovani — Cat. A/B-C: 5,00 € — Cat. D: 5,50 € — Cat. E: 6,50 € — Regina Margherita: 7,50 €",
-        ],
-      },
-      { type: 'heading', text: 'Consumazioni (Soci / Non Soci)' },
-      {
-        type: 'list',
-        items: [
-          "Tè (1/3 litro) — da 2,00 / 2,50 € (Cat. A/B) a 2,50 / 3,50 € (Regina Margherita)",
-          "Tè (1 litro) — da 4,00 / 5,00 € a 4,50 / 5,50 €",
-          "Minestrone con pasta o pastasciutta — da 6,00 / 7,50 € a 7,00 / 8,50 €",
-          "Acqua minerale 0,5 l — da 1,50 / 1,80 € a 2,50 / 3,00 €",
-          "Acqua minerale 1,5 l — da 2,30 / 2,80 € a 3,80 / 4,50 €",
-          "Mezza pensione — supplemento per non soci da +10,00 € a +15,00 €",
-        ],
-      },
-      { type: 'heading', text: 'Chiarimenti' },
       {
         type: 'paragraph',
         text:
-          "Gli importi sopra indicati sono quelli massimi applicabili a discrezione delle Sezioni. Nel periodo invernale (1/12 — 30/4) è applicabile un aumento del 30% per i non soci della quota riscaldamento.",
+          "In questa pagina sono riportate le tariffe ufficiali dei rifugi del Club Alpino Italiano in vigore dall'8 gennaio 2026 al 10 gennaio 2027, approvate dal Comitato Centrale di Indirizzo e Controllo del CAI. Le tariffe costituiscono il riferimento per tutte le strutture del Sodalizio e prevedono agevolazioni dedicate ai soci CAI e alle associazioni alpinistiche in regime di reciprocità.",
       },
       {
         type: 'paragraph',
         text:
-          "Le Sezioni sono invitate a fornire un servizio di ristorazione semplice. I non Soci che intendono consumare cibi propri sono tenuti al pagamento di una quota (max 3,00 Euro), a seconda della Sezione che gestisce il rifugio, quale contributo per il servizio.",
+          "I rifugi CAI svolgono un ruolo fondamentale nell'accoglienza degli escursionisti e nella presenza attiva nelle terre alte. Le agevolazioni riservate ai soci rappresentano uno dei benefici dell'appartenenza al Club Alpino Italiano e contribuiscono a sostenere la rete dei rifugi e la loro funzione di presidio della montagna.",
+      },
+      {
+        type: 'paragraph',
+        text: "Il documento completo con tutte le tariffe è consultabile e scaricabile qui:",
+      },
+      {
+        type: 'link',
+        href: 'https://www.cai.it/documentazione-rifugi-e-bivacchi/',
+        label: 'Consulta il tariffario ufficiale CAI 2026',
       },
     ],
   },
 
 };
+
 
 export const caiPageList = Object.values(caiPages);
