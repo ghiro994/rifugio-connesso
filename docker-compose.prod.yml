@@ -51,12 +51,13 @@ services:
       - "traefik.http.middlewares.rifugio_https_redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.rifugio_https_redirect.redirectscheme.permanent=true"
 
-      - "traefik.http.routers.rifugio_http.entrypoints=http"
+      - "traefik.http.routers.rifugio_http.entrypoints=web"
       - "traefik.http.routers.rifugio_http.rule=Host(`${APP_HOST:-rifugiebivacchi.cl.robinmail.it}`)"
       - "traefik.http.routers.rifugio_http.middlewares=rifugio_https_redirect"
 
-      - "traefik.http.routers.rifugio_https.entrypoints=https"
+      - "traefik.http.routers.rifugio_https.entrypoints=websecure"
       - "traefik.http.routers.rifugio_https.rule=Host(`${APP_HOST:-rifugiebivacchi.cl.robinmail.it}`)"
+      - "traefik.http.routers.rifugio_https.priority=100"
       - "traefik.http.routers.rifugio_https.tls=true"
       - "traefik.http.routers.rifugio_https.tls.certresolver=letsencrypt"
 
@@ -176,12 +177,13 @@ services:
       - "traefik.http.middlewares.rifugio_pgadmin_https_redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.rifugio_pgadmin_https_redirect.redirectscheme.permanent=true"
 
-      - "traefik.http.routers.rifugio_pgadmin_http.entrypoints=http"
+      - "traefik.http.routers.rifugio_pgadmin_http.entrypoints=web"
       - "traefik.http.routers.rifugio_pgadmin_http.rule=Host(`${PGADMIN_HOST:-pgadmin-rifugiebivacchi.cl.robinmail.it}`)"
       - "traefik.http.routers.rifugio_pgadmin_http.middlewares=rifugio_pgadmin_https_redirect"
 
-      - "traefik.http.routers.rifugio_pgadmin_https.entrypoints=https"
+      - "traefik.http.routers.rifugio_pgadmin_https.entrypoints=websecure"
       - "traefik.http.routers.rifugio_pgadmin_https.rule=Host(`${PGADMIN_HOST:-pgadmin-rifugiebivacchi.cl.robinmail.it}`)"
+      - "traefik.http.routers.rifugio_pgadmin_https.priority=100"
       - "traefik.http.routers.rifugio_pgadmin_https.tls=true"
       - "traefik.http.routers.rifugio_pgadmin_https.tls.certresolver=letsencrypt"
 
