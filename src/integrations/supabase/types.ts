@@ -262,66 +262,7 @@ export type Database = {
       }
     }
     Views: {
-      announcements_public: {
-        Row: {
-          availability: string | null
-          contact_name: string | null
-          created_at: string | null
-          description: string | null
-          desired_role: string | null
-          experience: string | null
-          id: string | null
-          preferred_area: string | null
-          region: string | null
-          rifugio_name: string | null
-          role_sought: string | null
-          season: string | null
-          status: Database["public"]["Enums"]["announcement_status"] | null
-          title: string | null
-          type: Database["public"]["Enums"]["announcement_type"] | null
-          updated_at: string | null
-          website: string | null
-        }
-        Insert: {
-          availability?: string | null
-          contact_name?: string | null
-          created_at?: string | null
-          description?: string | null
-          desired_role?: string | null
-          experience?: string | null
-          id?: string | null
-          preferred_area?: string | null
-          region?: string | null
-          rifugio_name?: string | null
-          role_sought?: string | null
-          season?: string | null
-          status?: Database["public"]["Enums"]["announcement_status"] | null
-          title?: string | null
-          type?: Database["public"]["Enums"]["announcement_type"] | null
-          updated_at?: string | null
-          website?: string | null
-        }
-        Update: {
-          availability?: string | null
-          contact_name?: string | null
-          created_at?: string | null
-          description?: string | null
-          desired_role?: string | null
-          experience?: string | null
-          id?: string | null
-          preferred_area?: string | null
-          region?: string | null
-          rifugio_name?: string | null
-          role_sought?: string | null
-          season?: string | null
-          status?: Database["public"]["Enums"]["announcement_status"] | null
-          title?: string | null
-          type?: Database["public"]["Enums"]["announcement_type"] | null
-          updated_at?: string | null
-          website?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       delete_email: {
