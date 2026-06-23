@@ -274,8 +274,9 @@ export const caiPages: Record<string, CaiPage> = {
       },
       {
         type: 'link',
-        href: 'https://www.cai.it/documentazione-rifugi-e-bivacchi/',
-        label: 'Documentazione rifugi e bivacchi — cai.it',
+        href: regolamentoPdf.url,
+        label: 'Scarica il Regolamento delle strutture ricettive del CAI (PDF)',
+        external: true,
       },
     ],
   },
