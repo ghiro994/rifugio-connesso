@@ -1,6 +1,7 @@
 // Contenuti estratti dal sito storico CAI Lugo - rifugiebivacchi.cailugo.it
 // Strutturati come sezioni con titolo + paragrafi
 import tariffarioPdf from '@/assets/tariffario-rifugi-2026.pdf.asset.json';
+import regolamentoPdf from '@/assets/regolamento-strutture-ricettive-cai.pdf.asset.json';
 
 export type ContentBlock =
   | { type: 'paragraph'; text: string }
