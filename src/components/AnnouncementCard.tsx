@@ -9,7 +9,6 @@ interface Props {
 
 const AnnouncementCard = ({ announcement: a }: Props) => {
   const [open, setOpen] = useState(false);
-  const mailtoLink = `mailto:${a.email}?subject=${encodeURIComponent(`Contatto da Rifugi & Bivacchi: ${a.title}`)}`;
 
   return (
     <>
@@ -40,17 +39,12 @@ const AnnouncementCard = ({ announcement: a }: Props) => {
 
         <div className="flex items-center justify-between gap-2 mt-auto pt-2">
           <span className="text-sm text-muted-foreground truncate">{a.contact_name}</span>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => setOpen(true)}
-              className="inline-flex items-center gap-1.5 text-sm font-medium border border-border text-foreground px-3 py-1.5 rounded-md hover:bg-secondary transition-colors"
-            >
-              <Eye className="h-3.5 w-3.5" /> Leggi tutto
-            </button>
-            <a href={mailtoLink} className="text-sm font-medium bg-primary text-primary-foreground px-4 py-1.5 rounded-md hover:opacity-90 transition-opacity">
-              Contatta
-            </a>
-          </div>
+          <button
+            onClick={() => setOpen(true)}
+            className="inline-flex items-center gap-1.5 text-sm font-medium bg-primary text-primary-foreground px-4 py-1.5 rounded-md hover:opacity-90 transition-opacity shrink-0"
+          >
+            <Eye className="h-3.5 w-3.5" /> Leggi tutto
+          </button>
         </div>
       </div>
 

@@ -20,7 +20,11 @@ export async function fetchPublishedAnnouncements(
   signal?: AbortSignal,
 ): Promise<Tables<'announcements'>[]> {
   const params = new URLSearchParams();
-  params.set('select', '*');
+  // Explicit column list: email & phone are not granted to anon (privacy).
+  params.set(
+    'select',
+    'id,type,title,description,contact_name,region,season,status,rifugio_name,role_sought,website,desired_role,experience,preferred_area,availability,created_at,updated_at',
+  );
   params.set('status', 'eq.pubblicato');
   params.set('order', 'created_at.desc');
   if (filters.type) params.set('type', `eq.${filters.type}`);
