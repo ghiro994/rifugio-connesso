@@ -1,40 +1,30 @@
-import { Mountain, Users, Heart } from 'lucide-react';
-
 const ChiSiamo = () => (
   <div className="container-page py-10 max-w-3xl">
     <h1 className="heading-section mb-6">Chi siamo</h1>
 
-    <div className="space-y-6 text-body text-muted-foreground">
+    <div className="space-y-6 text-body text-foreground/85 leading-relaxed">
       <p>
-        <strong className="text-foreground">Rifugi & Bivacchi</strong> nasce dall'amore per la montagna e dalla volontà di creare uno strumento utile per chi vive e lavora nei rifugi italiani.
+        <strong className="text-foreground">Rifugi & Bivacchi</strong> è un progetto promosso e curato dalla Sezione CAI di Lugo di Romagna, nato dall'esperienza maturata in molti anni di raccolta e diffusione di annunci di offerta e ricerca di lavoro nei rifugi alpini e appenninici. La Sezione CAI di Lugo pubblica e raccoglie annunci di lavoro nei rifugi da oltre vent'anni, mettendo gratuitamente a disposizione questo servizio per la comunità della montagna.
       </p>
 
       <p>
-        Il nostro obiettivo è semplice: mettere in contatto i gestori dei rifugi con le persone che cercano lavoro stagionale in montagna. Cuochi, camerieri, aiuto-rifugisti, tuttofare — il mondo dei rifugi ha bisogno di persone appassionate e motivate, e noi vogliamo facilitare questo incontro.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-10">
-        {[
-          { icon: Mountain, title: 'La montagna', desc: 'Un patrimonio naturale e culturale che merita di essere valorizzato e protetto.' },
-          { icon: Users, title: 'La comunità', desc: 'Crediamo nel valore delle relazioni e nella forza di una rete di persone appassionate.' },
-          { icon: Heart, title: 'Il lavoro', desc: 'Il lavoro in rifugio è un\'esperienza unica. Vogliamo renderla accessibile a tutti.' },
-        ].map((item) => (
-          <div key={item.title} className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-mountain-green-light text-primary">
-              <item.icon className="h-5 w-5" />
-            </div>
-            <h3 className="heading-card text-foreground">{item.title}</h3>
-            <p className="text-sm">{item.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      <p>
-        Parallelamente, stiamo costruendo un archivio completo dei rifugi e bivacchi italiani, con informazioni pratiche, servizi, contatti e modalità di accesso. Uno strumento utile per escursionisti, alpinisti e appassionati.
+        I rifugi non sono semplicemente luoghi di accoglienza: rappresentano un presidio fondamentale per la frequentazione consapevole della montagna, per la sicurezza degli escursionisti e per la tutela del patrimonio naturale e culturale delle terre alte. Dietro ogni rifugio vi sono gestori, famiglie, collaboratori e volontari che, spesso in condizioni non semplici, contribuiscono a mantenere viva la presenza umana in montagna.
       </p>
 
       <p>
-        Il progetto è in continua evoluzione. Se vuoi collaborare, segnalare un rifugio o semplicemente dirci cosa ne pensi, <a href="/contatti" className="text-primary hover:underline">scrivici</a>.
+        Con questo sito desideriamo mettere a disposizione uno strumento utile e gratuito per chi gestisce rifugi e bivacchi e per chi desidera avvicinarsi a questo mondo attraverso esperienze di lavoro stagionale o collaborazioni.
+      </p>
+
+      <p>
+        Accanto al servizio annunci, il progetto raccoglie informazioni su rifugi e bivacchi italiani, con l'obiettivo di favorirne la conoscenza e la frequentazione responsabile.
+      </p>
+
+      <p>
+        L'iniziativa si inserisce nello spirito che da sempre anima il Club Alpino Italiano: promuovere la cultura della montagna, sostenere chi se ne prende cura e contribuire alla valorizzazione delle terre alte attraverso un servizio aperto a tutta la comunità degli escursionisti e degli appassionati.
+      </p>
+
+      <p>
+        Il progetto continua a evolversi grazie al contributo di soci, gestori, frequentatori dei rifugi e volontari. Per segnalazioni, aggiornamenti e suggerimenti, <a href="/contatti" className="text-primary hover:underline">scrivici</a>.
       </p>
     </div>
   </div>
