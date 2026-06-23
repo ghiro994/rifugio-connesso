@@ -26,41 +26,36 @@ export const caiPages: Record<string, CaiPage> = {
       {
         type: 'paragraph',
         text:
-          "Questo servizio consente l'accesso a informazioni su tutti i rifugi e bivacchi presenti sulle montagne italiane, permettendone, qualora siano disponibili, anche la visione della fotografia e della carta geografica della zona di ubicazione.",
+          "Rifugi & Bivacchi mette a disposizione informazioni su rifugi e bivacchi presenti sulle montagne italiane, con l'obiettivo di favorirne la conoscenza, la frequentazione consapevole e la valorizzazione come patrimonio della cultura alpina e appenninica.",
       },
       {
         type: 'paragraph',
         text:
-          "La pagina della ricerca consente molteplici possibilità di accesso ai dati. Con il servizio prenotazione rifugi è possibile riservare i posti nei rifugi direttamente dal sito.",
+          "Per ogni struttura sono raccolti, quando disponibili, dati utili alla pianificazione delle escursioni: contatti, servizi, modalità di accesso, posizione geografica, fotografie, collegamenti ai siti ufficiali e altre informazioni di interesse per escursionisti e alpinisti.",
       },
       {
         type: 'paragraph',
         text:
-          "Per i rifugi del CAI si trova il regolamento e il tariffario vigente, così come per i rifugi dell'Alpenverein Suedtirol. Anche per le singole strutture private sono riportate le tariffe, se a noi note. Inoltre links alle home pages dei rifugi, accessi e itinerari, bibliografia e cartografia.",
+          "Il portale offre inoltre uno storico e un servizio dedicato agli annunci di offerta e ricerca di lavoro nei rifugi, attività che la Sezione CAI di Lugo di Romagna porta avanti da molti anni per sostenere i gestori e contribuire alla continuità di questi importanti presìdi della montagna.",
       },
       {
         type: 'paragraph',
         text:
-          "Ci scusiamo per la possibile incompletezza e inesattezza dei dati riportati. Il servizio è in continuo perfezionamento e ampliamento. Lo scopo è di fornire notizie sempre più aggiornate.",
+          "I dati pubblicati provengono da fonti pubbliche, dai gestori e dalle segnalazioni ricevute dalla comunità degli utenti. Per questo invitiamo chiunque disponga di informazioni aggiornate, fotografie, correzioni o segnalazioni a collaborare al miglioramento del servizio.",
       },
-      { type: 'heading', text: 'Contribuisci' },
+      { type: 'heading', text: 'Contatti' },
       {
         type: 'paragraph',
-        text:
-          "Invitiamo tutti coloro che si trovano in possesso di dati e fotografie utili al miglioramento del servizio a fornirceli inviandoci una email all'indirizzo rifugi@cailugo.it o scrivendo a:",
-      },
-      {
-        type: 'paragraph',
-        text:
-          "CAI Lugo di Romagna — Piazza G. Savonarola 3 — 48022 Lugo (RA) — Italy",
+        text: "Email: rifugi@cailugo.it",
       },
       {
         type: 'paragraph',
         text:
-          "Chi fosse interessato a questo servizio può inserire nella propria pagina un link che rimandi al nostro sito.",
+          "CAI Lugo di Romagna — Piazza G. Savonarola 3 — 48022 Lugo (RA)",
       },
     ],
   },
+
 
 
   tipologie: {
@@ -233,26 +228,32 @@ export const caiPages: Record<string, CaiPage> = {
 
   commissione: {
     slug: 'commissione',
-    title: 'La Commissione Centrale Rifugi',
+    title: 'La Commissione Centrale Rifugi ed Opere Alpine',
     breadcrumb: 'I rifugi del CAI',
     blocks: [
       {
         type: 'paragraph',
         text:
-          "La Commissione Rifugi, uno degli Organi Tecnici Centrali Operativi (OTCO) del Club Alpino Italiano, opera coordinando il lavoro delle Commissioni periferiche, che fanno capo ai vari Gruppi Regionali del CAI.",
+          "La Commissione Centrale Rifugi ed Opere Alpine (CCROA) è uno degli Organi Tecnici Centrali Operativi (OTCO) del Club Alpino Italiano (CAI). Si occupa di tutelare e gestire i rifugi alpini come strutture di pubblica utilità e presidi fondamentali in quota.",
       },
       {
         type: 'paragraph',
         text:
-          "Suoi compiti sono l'emanazione di regolamenti e normative che riguardano i rifugi del CAI (primo tra tutti il Regolamento Generale Rifugi) e il controllo che tali regolamenti e normative siano rispettati. È inoltre la Commissione a stabilire annualmente il Tariffario per i rifugi del CAI.",
+          "Le funzioni e gli scopi principali di questo organo includono la gestione e manutenzione dei rifugi: la Commissione lavora in stretta sinergia con le Commissioni Regionali e le sezioni territoriali CAI proprietarie dei rifugi, offrendo supporto tecnico, logistico e amministrativo. Definisce inoltre le direttive generali per garantire che tutti i rifugi offrano standard di accoglienza e sicurezza uniformi su tutto il territorio nazionale.",
       },
       {
         type: 'paragraph',
         text:
-          "È oggi possibile comunicare direttamente con la Commissione, attraverso un indirizzo e-mail, mentre in futuro verrà approntato anche uno spazio per la consultazione delle circolari e dei regolamenti mano a mano approvati.",
+          "È possibile consultare l'elenco completo degli OTCO e le attività della commissione visitando la pagina ufficiale degli Organi Tecnici Centrali CAI.",
+      },
+      {
+        type: 'link',
+        href: 'https://www.cai.it/',
+        label: 'Vai al sito ufficiale del CAI',
       },
     ],
   },
+
 
   regolamenti: {
     slug: 'regolamenti',
