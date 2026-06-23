@@ -335,8 +335,9 @@ export const caiPages: Record<string, CaiPage> = {
       },
       {
         type: 'link',
-        href: 'https://www.cai.it/documentazione-rifugi-e-bivacchi/',
-        label: 'Consulta il tariffario ufficiale CAI 2026',
+        href: tariffarioPdf.url,
+        label: 'Scarica il tariffario ufficiale CAI 2026 (PDF)',
+        external: true,
       },
     ],
   },
