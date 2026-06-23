@@ -4,7 +4,9 @@
 export type ContentBlock =
   | { type: 'paragraph'; text: string }
   | { type: 'heading'; text: string; level?: 2 | 3 }
-  | { type: 'list'; items: string[] };
+  | { type: 'list'; items: string[] }
+  | { type: 'link'; href: string; label: string; external?: boolean };
+
 
 export type CaiPage = {
   slug: string;

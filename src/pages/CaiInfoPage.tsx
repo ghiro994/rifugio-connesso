@@ -64,6 +64,20 @@ const CaiInfoPage = () => {
               </ul>
             );
           }
+          if (block.type === 'link') {
+            return (
+              <a
+                key={i}
+                href={block.href}
+                target={block.external === false ? undefined : '_blank'}
+                rel={block.external === false ? undefined : 'noopener noreferrer'}
+                className="inline-flex items-center gap-2 text-primary hover:underline text-body break-all"
+              >
+                {block.label}
+              </a>
+            );
+          }
+
           return null;
         })}
       </div>
