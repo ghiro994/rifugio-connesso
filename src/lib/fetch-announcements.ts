@@ -1,10 +1,5 @@
-// Direct REST fetch to Supabase, bypasses supabase-js auth/lock initialization
-// which can hang indefinitely in some browser sessions (WebLocks contention,
-// stale localStorage state). Public published announcements don't need auth.
-import type { Tables } from '@/integrations/supabase/types';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+import type { AnnouncementRow } from '@/lib/db-types';
+import { api } from '@/lib/api';
 
 export interface AnnouncementFilters {
   type?: 'offro' | 'cerco';
@@ -18,47 +13,25 @@ export interface AnnouncementFilters {
 export async function fetchPublishedAnnouncements(
   filters: AnnouncementFilters = {},
   signal?: AbortSignal,
-): Promise<Tables<'announcements'>[]> {
+): Promise<AnnouncementRow[]> {
   const params = new URLSearchParams();
-  // Explicit column list: email & phone are not granted to anon (privacy).
-  params.set(
-    'select',
-    'id,type,title,description,contact_name,region,season,status,rifugio_name,role_sought,website,desired_role,experience,preferred_area,availability,created_at,updated_at',
-  );
-  params.set('status', 'eq.pubblicato');
-  params.set('order', 'created_at.desc');
-  if (filters.type) params.set('type', `eq.${filters.type}`);
-  if (filters.region) params.set('region', `eq.${filters.region}`);
-  if (filters.role_sought) params.set('role_sought', `eq.${filters.role_sought}`);
-  if (filters.desired_role) params.set('desired_role', `eq.${filters.desired_role}`);
-  if (filters.season) params.set('season', `eq.${filters.season}`);
+  if (filters.type) params.set('type', filters.type);
+  if (filters.region) params.set('region', filters.region);
+  if (filters.role_sought) params.set('role_sought', filters.role_sought);
+  if (filters.desired_role) params.set('desired_role', filters.desired_role);
+  if (filters.season) params.set('season', filters.season);
   if (filters.limit) params.set('limit', String(filters.limit));
 
-  // 12s timeout safety net
-  const timeoutCtrl = new AbortController();
-  const timer = setTimeout(() => timeoutCtrl.abort(), 12000);
-  const combined = signal
-    ? new AbortController()
-    : timeoutCtrl;
-  if (signal) {
-    signal.addEventListener('abort', () => combined.abort());
-    timeoutCtrl.signal.addEventListener('abort', () => combined.abort());
-  }
+  const qs = params.toString();
+  const base =
+    (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ??
+    (import.meta.env.DEV ? 'http://localhost:3100' : '');
 
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/announcements?${params.toString()}`, {
-      headers: {
-        apikey: SUPABASE_KEY,
-        Authorization: `Bearer ${SUPABASE_KEY}`,
-        Accept: 'application/json',
-      },
-      signal: combined.signal,
-    });
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-    return (await res.json()) as Tables<'announcements'>[];
-  } finally {
-    clearTimeout(timer);
-  }
+  const res = await fetch(`${base}/api/announcements${qs ? `?${qs}` : ''}`, {
+    signal,
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json() as Promise<AnnouncementRow[]>;
 }
+
+export { api };

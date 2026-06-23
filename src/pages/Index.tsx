@@ -4,10 +4,10 @@ import { Briefcase, Search, ArrowRight, Users, CheckCircle, Clock, RefreshCw } f
 import heroImage from '@/assets/hero-mountains.jpg';
 import AnnouncementCard from '@/components/AnnouncementCard';
 import { fetchPublishedAnnouncements } from '@/lib/fetch-announcements';
-import type { Tables } from '@/integrations/supabase/types';
+import type { AnnouncementRow } from '@/lib/db-types';
 
 const Index = () => {
-  const [latestAnnouncements, setLatestAnnouncements] = useState<Tables<'announcements'>[]>([]);
+  const [latestAnnouncements, setLatestAnnouncements] = useState<AnnouncementRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);

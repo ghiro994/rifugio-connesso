@@ -4,13 +4,13 @@ import { Plus, RefreshCw } from 'lucide-react';
 import AnnouncementCard from '@/components/AnnouncementCard';
 import { fetchPublishedAnnouncements } from '@/lib/fetch-announcements';
 import { REGIONS, ROLES, SEASONS } from '@/lib/types';
-import type { Tables } from '@/integrations/supabase/types';
+import type { AnnouncementRow } from '@/lib/db-types';
 
 const OffroLavoro = () => {
   const [region, setRegion] = useState('');
   const [role, setRole] = useState('');
   const [season, setSeason] = useState('');
-  const [announcements, setAnnouncements] = useState<Tables<'announcements'>[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reloadKey, setReloadKey] = useState(0);

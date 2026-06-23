@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rifugio
+      POSTGRES_USER: rifugio
+      POSTGRES_PASSWORD: rifugio_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rifugio -d rifugio"]
+      interval: 3s
+      retries: 15
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    profiles: ["full"]
+    ports:
+      - "3100:3000"
+    volumes:
+      - ./backend:/app
+      - ./scripts/migrate/output:/import:ro
+      - uploads:/app/uploads
+      - api_node_modules:/app/node_modules
+    environment:
+      DATABASE_URL: postgresql://rifugio:rifugio_dev@db:5432/rifugio
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      ADMIN_EMAIL: admin@cailugo.it
+      ADMIN_PASSWORD: admin123
+      UPLOAD_DIR: /app/uploads
+      CDN_BASE_URL: http://localhost:3000/uploads
+      IMPORT_DIR: /import
+      PORT: 3000
+    depends_on:
+      db:
+        condition: service_healthy
+    command: sh -c "npm install && npm run dev"
+
+volumes:
+  pgdata:
+  uploads:
+  api_node_modules:

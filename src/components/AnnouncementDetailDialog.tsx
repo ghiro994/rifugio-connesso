@@ -1,9 +1,9 @@
-import type { Tables } from '@/integrations/supabase/types';
+import type { AnnouncementRow } from '@/lib/db-types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { MapPin, Calendar, Briefcase, Building2, User, Mail, Phone, Globe, Clock } from 'lucide-react';
 
 interface Props {
-  announcement: Tables<'announcements'> | null;
+  announcement: AnnouncementRow | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** When true, shows private contact info (email/phone). Used in admin moderation. */

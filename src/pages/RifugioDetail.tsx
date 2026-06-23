@@ -1,32 +1,32 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
+import type { RifugioRow } from '@/lib/db-types';
 import { useAuth } from '@/hooks/useAuth';
 import { MapPin, Mountain, ArrowLeft, Globe, Mail, Upload, X } from 'lucide-react';
 
 const RifugioDetail = () => {
   const { id } = useParams();
   const { isAdmin } = useAuth();
-  const [rifugio, setRifugio] = useState<any>(null);
+  const [rifugio, setRifugio] = useState<RifugioRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadSlot, setUploadSlot] = useState<number>(0);
 
   const fetchRifugio = async () => {
-    const { data } = await supabase.from('rifugi').select('*').eq('id', id).maybeSingle();
-    setRifugio(data);
+    try {
+      const data = await api.get<RifugioRow>(`/api/rifugi/${id}`);
+      setRifugio(data);
+    } catch {
+      setRifugio(null);
+    }
     setLoading(false);
   };
 
   useEffect(() => {
     fetchRifugio();
   }, [id]);
-
-  const getPublicUrl = (path: string) => {
-    const { data } = supabase.storage.from('rifugi-uploads').getPublicUrl(path);
-    return data.publicUrl;
-  };
 
   const handleUploadClick = (slot: number) => {
     setUploadSlot(slot);
@@ -39,28 +39,12 @@ const RifugioDetail = () => {
 
     setUploading(uploadSlot);
     try {
-      const ext = file.name.split('.').pop();
-      const filePath = `${rifugio.id}/photo_${uploadSlot}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('rifugi-uploads')
-        .upload(filePath, file, { upsert: true });
-
-      if (uploadError) throw uploadError;
-
-      const publicUrl = getPublicUrl(filePath);
-      const newImages = [...(rifugio.images || [])];
-      newImages[uploadSlot] = publicUrl;
-
-      const { error: updateError } = await supabase
-        .from('rifugi')
-        .update({ images: newImages })
-        .eq('id', rifugio.id);
-
-      if (updateError) throw updateError;
+      const formData = new FormData();
+      formData.append('file', file);
+      await api.upload<{ images: string[] }>(`/api/rifugi/${rifugio.id}/images?slot=${uploadSlot}`, formData);
       await fetchRifugio();
-    } catch (err: any) {
-      console.error('Upload error:', err.message);
+    } catch (err) {
+      console.error('Upload error:', err);
     } finally {
       setUploading(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -71,7 +55,7 @@ const RifugioDetail = () => {
     if (!rifugio) return;
     const newImages = [...(rifugio.images || [])];
     newImages[slot] = '';
-    await supabase.from('rifugi').update({ images: newImages }).eq('id', rifugio.id);
+    await api.patch(`/api/rifugi/${rifugio.id}`, { images: newImages });
     await fetchRifugio();
   };
 

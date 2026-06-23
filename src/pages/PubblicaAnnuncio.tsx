@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { REGIONS, ROLES, SEASONS, AnnouncementType } from '@/lib/types';
 import { CheckCircle } from 'lucide-react';
 
@@ -26,34 +26,27 @@ const PubblicaAnnuncio = () => {
     if (!privacy || submitting) return;
     setSubmitting(true);
 
-    const { error } = await supabase.from('announcements').insert({
-      type,
-      title: form.title,
-      description: form.description,
-      contact_name: form.contactName,
-      email: form.email,
-      phone: form.phone || null,
-      region: form.region,
-      season: form.season,
-      rifugio_name: type === 'offro' ? form.rifugioName || null : null,
-      role_sought: type === 'offro' ? form.roleSought || null : null,
-      website: type === 'offro' ? form.website || null : null,
-      desired_role: type === 'cerco' ? form.desiredRole || null : null,
-      experience: type === 'cerco' ? form.experience || null : null,
-      preferred_area: type === 'cerco' ? form.preferredArea || null : null,
-      availability: type === 'cerco' ? form.availability || null : null,
-    });
-
-    if (!error) {
-      // Send notification email to admin
-      try {
-        await supabase.functions.invoke('notify-admin', {
-          body: { title: form.title, type, contactName: form.contactName, region: form.region },
-        });
-      } catch {
-        // Email notification is best-effort
-      }
+    try {
+      await api.post('/api/announcements', {
+        type,
+        title: form.title,
+        description: form.description,
+        contact_name: form.contactName,
+        email: form.email,
+        phone: form.phone || null,
+        region: form.region,
+        season: form.season,
+        rifugio_name: type === 'offro' ? form.rifugioName || null : null,
+        role_sought: type === 'offro' ? form.roleSought || null : null,
+        website: type === 'offro' ? form.website || null : null,
+        desired_role: type === 'cerco' ? form.desiredRole || null : null,
+        experience: type === 'cerco' ? form.experience || null : null,
+        preferred_area: type === 'cerco' ? form.preferredArea || null : null,
+        availability: type === 'cerco' ? form.availability || null : null,
+      });
       setSubmitted(true);
+    } catch {
+      // submit failed silently — could add toast
     }
     setSubmitting(false);
   };

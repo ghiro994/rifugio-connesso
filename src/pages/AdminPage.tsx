@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import type { Tables } from '@/integrations/supabase/types';
+import { api } from '@/lib/api';
+import type { AnnouncementRow } from '@/lib/db-types';
 import { Trash2, Check, X, LogOut, Upload, FileSpreadsheet, Eye, CloudUpload } from 'lucide-react';
 import { read, utils } from 'xlsx';
 import AnnouncementDetailDialog from '@/components/AnnouncementDetailDialog';
 
-type Announcement = Tables<'announcements'>;
+type Announcement = AnnouncementRow;
 type Status = Announcement['status'];
 
 const statusLabels: Record<Status, string> = {
@@ -44,10 +44,11 @@ const AdminPage = () => {
     setBackupRunning(true);
     setBackupResult(null);
     try {
-      const { data, error } = await supabase.functions.invoke('backup-to-drive', { body: {} });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      setBackupResult({ ok: true, message: `Backup completato: cartella "${data.folder}" — ${data.counts.announcements} annunci, ${data.counts.rifugi} rifugi.` });
+      const data = await api.post<{ folder: string; counts: { announcements: number; rifugi: number } }>('/api/admin/backup');
+      setBackupResult({
+        ok: true,
+        message: `Backup completato in "${data.folder}" — ${data.counts.announcements} annunci, ${data.counts.rifugi} rifugi.`,
+      });
     } catch (e) {
       setBackupResult({ ok: false, message: e instanceof Error ? e.message : 'Errore sconosciuto' });
     } finally {
@@ -62,8 +63,12 @@ const AdminPage = () => {
   }, [user, isAdmin, authLoading, navigate]);
 
   const fetchAnnouncements = async () => {
-    const { data } = await supabase.from('announcements').select('*').order('created_at', { ascending: false });
-    setAnnouncements(data || []);
+    try {
+      const data = await api.get<Announcement[]>('/api/admin/announcements');
+      setAnnouncements(data);
+    } catch {
+      setAnnouncements([]);
+    }
     setLoading(false);
   };
 
@@ -72,13 +77,13 @@ const AdminPage = () => {
   }, [isAdmin]);
 
   const handleStatus = async (id: string, status: Status) => {
-    await supabase.from('announcements').update({ status }).eq('id', id);
+    await api.patch(`/api/admin/announcements/${id}`, { status });
     fetchAnnouncements();
   };
 
   const handleDelete = async (id: string) => {
     if (confirm('Eliminare questo annuncio?')) {
-      await supabase.from('announcements').delete().eq('id', id);
+      await api.delete(`/api/admin/announcements/${id}`);
       fetchAnnouncements();
     }
   };
@@ -143,32 +148,20 @@ const AdminPage = () => {
     setUploadResult(null);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('Non autenticato');
-
-      // Parse XLS client-side
       const buffer = await file.arrayBuffer();
       const rows = parseXlsRows(buffer);
       if (!rows.length) throw new Error('Il file è vuoto');
 
-      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-      const res = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/import-rifugi`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ rows }),
-        }
-      );
-
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || 'Errore durante l\'importazione');
+      const result = await api.post<{
+        inserted: number; updated: number; skipped: number; errors: string[]; total: number;
+      }>('/api/admin/rifugi/import', { rows });
       setUploadResult(result);
-    } catch (err: any) {
-      setUploadResult({ inserted: 0, updated: 0, skipped: 0, errors: [err.message], total: 0 });
+    } catch (err) {
+      setUploadResult({
+        inserted: 0, updated: 0, skipped: 0,
+        errors: [err instanceof Error ? err.message : 'Errore'],
+        total: 0,
+      });
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -190,14 +183,13 @@ const AdminPage = () => {
         </button>
       </div>
 
-      {/* Upload Rifugi Section */}
       <section className="mb-12 card-mountain">
         <div className="flex items-center gap-3 mb-4">
           <FileSpreadsheet className="h-5 w-5 text-primary" />
           <h2 className="heading-card">Importa rifugi da file XLS/XLSX</h2>
         </div>
         <p className="text-sm text-muted-foreground mb-4">
-          Carica un file Excel con le colonne: <strong>Nome, Regione, Provincia, Gruppo Montuoso, Altitudine, Descrizione, Servizi, Accesso, Contatti, Sito Web</strong>. I servizi vanno separati da virgola. I rifugi già presenti (stesso nome e regione) verranno aggiornati.
+          Carica un file Excel con le colonne: <strong>Nome, Regione, Provincia, Gruppo Montuoso, Altitudine, Descrizione, Servizi, Accesso, Contatti, Sito Web</strong>.
         </p>
         <div className="flex items-center gap-4">
           <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors ${uploading ? 'bg-muted text-muted-foreground' : 'bg-primary text-primary-foreground hover:opacity-90'}`}>
@@ -213,17 +205,23 @@ const AdminPage = () => {
             />
           </label>
         </div>
-
+        {uploadResult && (
+          <div className="mt-4 p-4 rounded-lg text-sm bg-secondary">
+            Inseriti: {uploadResult.inserted}, aggiornati: {uploadResult.updated}, saltati: {uploadResult.skipped}
+            {uploadResult.errors.length > 0 && (
+              <ul className="mt-2 text-destructive">{uploadResult.errors.map((e, i) => <li key={i}>{e}</li>)}</ul>
+            )}
+          </div>
+        )}
       </section>
 
-      {/* Backup su Google Drive */}
       <section className="mb-12 card-mountain">
         <div className="flex items-center gap-3 mb-4">
           <CloudUpload className="h-5 w-5 text-primary" />
-          <h2 className="heading-card">Backup su Google Drive</h2>
+          <h2 className="heading-card">Backup dati</h2>
         </div>
         <p className="text-sm text-muted-foreground mb-4">
-          Esporta annunci e rifugi (JSON + CSV) nella cartella <strong>Backup Rifugi CAI Lugo / data odierna</strong> del Google Drive collegato. Il backup viene eseguito automaticamente ogni notte alle 03:00.
+          Esporta annunci e rifugi in JSON nella cartella backup del server.
         </p>
         <button
           onClick={handleBackup}
@@ -240,7 +238,6 @@ const AdminPage = () => {
         )}
       </section>
 
-      {/* Announcements Moderation */}
       <h2 className="heading-card mb-4">Moderazione annunci</h2>
       <p className="text-body text-muted-foreground mb-8">Gestisci gli annunci inviati. Approva, rifiuta o elimina.</p>
 

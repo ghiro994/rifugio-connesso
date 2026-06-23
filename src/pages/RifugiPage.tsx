@@ -1,53 +1,38 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
+import type { RifugioRow } from '@/lib/db-types';
 import RifugioCard from '@/components/RifugioCard';
 import { REGIONS, MOUNTAIN_RANGES, SERVICES } from '@/lib/types';
-
-interface Rifugio {
-  id: string;
-  name: string;
-  region: string;
-  province: string;
-  mountain_range: string;
-  altitude: number;
-  description: string;
-  services: string[];
-  access: string;
-  contacts: string;
-  website: string;
-  images: string[];
-}
 
 const RifugiPage = () => {
   const [region, setRegion] = useState('');
   const [range, setRange] = useState('');
   const [service, setService] = useState('');
   const [maxAlt, setMaxAlt] = useState('');
-  const [rifugi, setRifugi] = useState<Rifugio[]>([]);
+  const [rifugi, setRifugi] = useState<RifugioRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRifugi = async () => {
-      let query = supabase.from('rifugi').select('*').order('name');
-      if (region) query = query.eq('region', region);
-      if (range) query = query.eq('mountain_range', range);
-      if (maxAlt) query = query.lte('altitude', Number(maxAlt));
-      
-      const { data } = await query;
-      let results = (data || []) as Rifugio[];
-      
-      if (service) {
-        results = results.filter(r => r.services.includes(service));
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (region) params.set('region', region);
+        if (range) params.set('mountain_range', range);
+        if (maxAlt) params.set('max_altitude', maxAlt);
+        if (service) params.set('service', service);
+        const qs = params.toString();
+        const data = await api.get<RifugioRow[]>(`/api/rifugi${qs ? `?${qs}` : ''}`);
+        setRifugi(data);
+      } catch {
+        setRifugi([]);
       }
-      
-      setRifugi(results);
       setLoading(false);
     };
     fetchRifugi();
   }, [region, range, service, maxAlt]);
 
-  // Map DB format to component format
-  const mapRifugio = (r: Rifugio) => ({
+  const mapRifugio = (r: RifugioRow) => ({
     id: r.id,
     name: r.name,
     region: r.region,

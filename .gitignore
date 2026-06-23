@@ -11,6 +11,19 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
+!.env.prod.example
+
+# Dati migrazione (PII)
+scripts/migrate/output/*.csv
+scripts/migrate/output/*.json
+
+backend/node_modules
+backend/dist
+backend/uploads
+backend/backups
 
 # Editor directories and files
 .vscode/*

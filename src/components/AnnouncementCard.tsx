@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import type { Tables } from '@/integrations/supabase/types';
+import type { AnnouncementRow } from '@/lib/db-types';
 import { MapPin, Calendar, Briefcase, Building2, Eye } from 'lucide-react';
 import AnnouncementDetailDialog from './AnnouncementDetailDialog';
 
 interface Props {
-  announcement: Tables<'announcements'>;
+  announcement: AnnouncementRow;
 }
 
 const AnnouncementCard = ({ announcement: a }: Props) => {

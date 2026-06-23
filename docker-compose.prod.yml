@@ -1,0 +1,206 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# docker-compose.prod.yml
+#
+# Stack di produzione — Rifugi e Bivacchi CAI Lugo.
+# Pensato per essere messo dietro un Traefik ESTERNO già in esecuzione
+# sulla macchina host (stesso pattern di Brevo Client / OpenProject).
+#
+# Network sharing:
+#   - `rifugio_connesso_net` (interna): app↔api↔db.
+#   - `traefik-net` (esterna, già esistente sull'host): il container `app`
+#     (e `pgadmin` opzionale) va attaccato manualmente a questa rete dopo
+#     il deploy, oppure con `docker network connect traefik-net rifugio_connesso_app`.
+#
+# Uso:
+#   1) cp .env.prod.example .env.prod   → riempi i valori
+#   2) docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+#   3) docker network connect traefik-net rifugio_connesso_app
+#      (e opz. rifugio_connesso_pgadmin se profilo tools attivo)
+#
+# Note:
+#   - Solo `app` espone labels Traefik. API e DB restano privati.
+#   - Nginx in `app` fa proxy di /api e /uploads verso `api:3000`.
+#   - pgAdmin è opt-in (profilo "tools").
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Frontend (React build + Nginx con proxy /api) ─────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ""
+    container_name: rifugio_connesso_app
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - rifugio_connesso_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+
+      - "traefik.http.middlewares.rifugio_https_redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.rifugio_https_redirect.redirectscheme.permanent=true"
+
+      - "traefik.http.routers.rifugio_http.entrypoints=http"
+      - "traefik.http.routers.rifugio_http.rule=Host(`${APP_HOST:-rifugiebivacchi.cl.robinmail.it}`)"
+      - "traefik.http.routers.rifugio_http.middlewares=rifugio_https_redirect"
+
+      - "traefik.http.routers.rifugio_https.entrypoints=https"
+      - "traefik.http.routers.rifugio_https.rule=Host(`${APP_HOST:-rifugiebivacchi.cl.robinmail.it}`)"
+      - "traefik.http.routers.rifugio_https.tls=true"
+      - "traefik.http.routers.rifugio_https.tls.certresolver=letsencrypt"
+
+      - "traefik.http.services.rifugio.loadbalancer.server.port=80"
+
+  # ── Backend Fastify ───────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rifugio_connesso_api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-rifugio}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-rifugio}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET obbligatorio}
+      UPLOAD_DIR: /app/uploads
+      CDN_BASE_URL: https://${APP_HOST:-rifugiebivacchi.cl.robinmail.it}/uploads
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      ADMIN_NOTIFY_EMAIL: ${ADMIN_NOTIFY_EMAIL:-}
+    volumes:
+      - uploads:/app/uploads
+      - backups:/app/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - rifugio_connesso_net
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      - "traefik.enable=false"
+
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: rifugio_connesso_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-rifugio}
+      POSTGRES_USER: ${POSTGRES_USER:-rifugio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD obbligatorio}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - rifugio_connesso_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rifugio} -d ${POSTGRES_DB:-rifugio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      - "traefik.enable=false"
+
+  # ── pgAdmin (opt-in, profilo "tools") ─────────────────────────────────────
+  # Avvio:
+  #   docker compose --env-file .env.prod --profile tools \
+  #     -f docker-compose.prod.yml up -d
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: rifugio_connesso_pgadmin
+    restart: unless-stopped
+    profiles: ["tools"]
+    entrypoint: >
+      /bin/sh -c "
+        echo '*:*:*:${POSTGRES_USER:-rifugio}:${POSTGRES_PASSWORD}' > /tmp/pgpass &&
+        chmod 600 /tmp/pgpass &&
+        /venv/bin/python3 /pgadmin4/init/pgadmin-init.py &
+        exec /entrypoint.sh
+      "
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-CHANGE_ME_pgadmin_password}
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+      PGADMIN_REPLACE_SERVERS_ON_STARTUP: "True"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      PGPASSFILE: /tmp/pgpass
+    volumes:
+      - ./docker/pgadmin-servers.json:/pgadmin4/servers.json:ro
+      - ./docker/pgadmin-init.py:/pgadmin4/init/pgadmin-init.py:ro
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - rifugio_connesso_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+
+      - "traefik.http.middlewares.rifugio_pgadmin_https_redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.rifugio_pgadmin_https_redirect.redirectscheme.permanent=true"
+
+      - "traefik.http.routers.rifugio_pgadmin_http.entrypoints=http"
+      - "traefik.http.routers.rifugio_pgadmin_http.rule=Host(`${PGADMIN_HOST:-pgadmin-rifugiebivacchi.cl.robinmail.it}`)"
+      - "traefik.http.routers.rifugio_pgadmin_http.middlewares=rifugio_pgadmin_https_redirect"
+
+      - "traefik.http.routers.rifugio_pgadmin_https.entrypoints=https"
+      - "traefik.http.routers.rifugio_pgadmin_https.rule=Host(`${PGADMIN_HOST:-pgadmin-rifugiebivacchi.cl.robinmail.it}`)"
+      - "traefik.http.routers.rifugio_pgadmin_https.tls=true"
+      - "traefik.http.routers.rifugio_pgadmin_https.tls.certresolver=letsencrypt"
+
+      - "traefik.http.services.rifugio_pgadmin.loadbalancer.server.port=80"
+
+      - "traefik.http.routers.rifugio_pgadmin_https.middlewares=rifugio_pgadmin_auth"
+      - "traefik.http.middlewares.rifugio_pgadmin_auth.basicauth.users=${PGADMIN_BASIC_AUTH:-}"
+
+networks:
+  rifugio_connesso_net:
+    name: rifugio_connesso_net
+    driver: bridge
+
+volumes:
+  pgdata:
+    name: rifugio_connesso_pgdata
+  uploads:
+    name: rifugio_connesso_uploads
+  backups:
+    name: rifugio_connesso_backups
+  pgadmin_data:
+    name: rifugio_connesso_pgadmin_data
