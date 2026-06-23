@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Mountain } from 'lucide-react';
+import { Mountain, Facebook, ExternalLink } from 'lucide-react';
 
 const Footer = () => (
   <footer className="bg-foreground text-primary-foreground mt-16">
@@ -14,9 +14,16 @@ const Footer = () => (
             <p>Sezione di Lugo di Romagna</p>
             <p>P.zza G. Savonarola, 3</p>
             <p>48022 Lugo (RA)</p>
-            <p>Tel./Fax +39 0545 30541</p>
             <p><a href="mailto:rifugi@cailugo.it" className="hover:opacity-100">rifugi@cailugo.it</a></p>
             <p className="pt-1">Segnalazioni urgenti: <a href="tel:+393346472474" className="hover:opacity-100">+39 334 6472474</a></p>
+          </div>
+          <div className="flex flex-col gap-1.5 text-sm pt-2">
+            <a href="https://www.cailugo.it/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
+              <ExternalLink className="h-3.5 w-3.5" /> Sito CAI Lugo
+            </a>
+            <a href="https://www.facebook.com/groups/215208796236/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
+              <Facebook className="h-3.5 w-3.5" /> Gruppo Facebook
+            </a>
           </div>
         </div>
         <div>

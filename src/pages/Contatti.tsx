@@ -1,4 +1,4 @@
-import { Mail, MapPin, Phone, AlertCircle } from 'lucide-react';
+import { Mail, MapPin, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 
 const Contatti = () => {
@@ -25,10 +25,6 @@ const Contatti = () => {
                 <p>P.zza G. Savonarola, 3</p>
                 <p>48022 Lugo (RA)</p>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-primary shrink-0" />
-              <span>Tel./Fax +39 0545 30541</span>
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-primary shrink-0" />

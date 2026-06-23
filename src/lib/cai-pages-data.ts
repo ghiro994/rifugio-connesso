@@ -50,7 +50,7 @@ export const caiPages: Record<string, CaiPage> = {
       {
         type: 'paragraph',
         text:
-          "CAI Lugo di Romagna — Piazza G. Savonarola 3 — 48022 Lugo (RA) — Italy — Tel./Fax 0545/30541",
+          "CAI Lugo di Romagna — Piazza G. Savonarola 3 — 48022 Lugo (RA) — Italy",
       },
       {
         type: 'paragraph',
