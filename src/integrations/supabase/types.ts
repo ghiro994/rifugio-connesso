@@ -262,7 +262,66 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      announcements_public: {
+        Row: {
+          availability: string | null
+          contact_name: string | null
+          created_at: string | null
+          description: string | null
+          desired_role: string | null
+          experience: string | null
+          id: string | null
+          preferred_area: string | null
+          region: string | null
+          rifugio_name: string | null
+          role_sought: string | null
+          season: string | null
+          status: Database["public"]["Enums"]["announcement_status"] | null
+          title: string | null
+          type: Database["public"]["Enums"]["announcement_type"] | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          availability?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          desired_role?: string | null
+          experience?: string | null
+          id?: string | null
+          preferred_area?: string | null
+          region?: string | null
+          rifugio_name?: string | null
+          role_sought?: string | null
+          season?: string | null
+          status?: Database["public"]["Enums"]["announcement_status"] | null
+          title?: string | null
+          type?: Database["public"]["Enums"]["announcement_type"] | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          availability?: string | null
+          contact_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          desired_role?: string | null
+          experience?: string | null
+          id?: string | null
+          preferred_area?: string | null
+          region?: string | null
+          rifugio_name?: string | null
+          role_sought?: string | null
+          season?: string | null
+          status?: Database["public"]["Enums"]["announcement_status"] | null
+          title?: string | null
+          type?: Database["public"]["Enums"]["announcement_type"] | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       delete_email: {
@@ -274,13 +333,6 @@ export type Database = {
         Returns: number
       }
       get_backup_cron_secret: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
       move_to_dlq: {
         Args: {
           dlq_name: string
