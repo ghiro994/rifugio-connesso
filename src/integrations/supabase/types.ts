@@ -274,13 +274,6 @@ export type Database = {
         Returns: number
       }
       get_backup_cron_secret: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
       move_to_dlq: {
         Args: {
           dlq_name: string

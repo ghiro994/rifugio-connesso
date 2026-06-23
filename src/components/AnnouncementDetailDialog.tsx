@@ -13,7 +13,9 @@ interface Props {
 const AnnouncementDetailDialog = ({ announcement: a, open, onOpenChange, showPrivateContacts = false }: Props) => {
   if (!a) return null;
 
-  const mailtoLink = `mailto:${a.email}?subject=${encodeURIComponent(`Contatto da Rifugi & Bivacchi: ${a.title}`)}`;
+  const adminMailto = showPrivateContacts && a.email
+    ? `mailto:${a.email}?subject=${encodeURIComponent(`Contatto da Rifugi & Bivacchi: ${a.title}`)}`
+    : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,19 +81,20 @@ const AnnouncementDetailDialog = ({ announcement: a, open, onOpenChange, showPri
             <h4 className="text-sm font-semibold text-foreground mb-2">Contatti</h4>
             <div className="space-y-1.5 text-sm text-muted-foreground">
               <p className="flex items-center gap-1.5"><User className="h-4 w-4" />{a.contact_name}</p>
-              {showPrivateContacts && (
+              {showPrivateContacts ? (
                 <>
-                  <p className="flex items-center gap-1.5"><Mail className="h-4 w-4" /><a href={mailtoLink} className="text-primary hover:underline">{a.email}</a></p>
+                  {a.email && (
+                    <p className="flex items-center gap-1.5"><Mail className="h-4 w-4" /><a href={adminMailto ?? '#'} className="text-primary hover:underline">{a.email}</a></p>
+                  )}
                   {a.phone && <p className="flex items-center gap-1.5"><Phone className="h-4 w-4" />{a.phone}</p>}
                 </>
+              ) : (
+                <p className="text-sm text-muted-foreground pt-1">
+                  Per tutelare la privacy, i recapiti diretti non sono pubblicati. Per essere messo in contatto con l'autore di questo annuncio scrivi a{' '}
+                  <a href="mailto:rifugi@cailugo.it" className="text-primary hover:underline">rifugi@cailugo.it</a> citando il titolo dell'annuncio.
+                </p>
               )}
             </div>
-          </div>
-
-          <div className="flex justify-end pt-2">
-            <a href={mailtoLink} className="inline-flex items-center gap-2 text-sm font-medium bg-primary text-primary-foreground px-5 py-2 rounded-md hover:opacity-90 transition-opacity">
-              <Mail className="h-4 w-4" /> Contatta
-            </a>
           </div>
         </div>
       </DialogContent>
