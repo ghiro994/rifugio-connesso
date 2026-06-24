@@ -7,14 +7,14 @@
 #
 # Network sharing:
 #   - `rifugio_connesso_net` (interna): app↔api↔db.
-#   - `traefik-net` (esterna, già esistente sull'host): il container `app`
+#   - `proxy` (esterna, già esistente sull'host): il container `app`
 #     (e `pgadmin` opzionale) va attaccato manualmente a questa rete dopo
-#     il deploy, oppure con `docker network connect traefik-net rifugio_connesso_app`.
+#     il deploy, oppure con `docker network connect proxy rifugio_connesso_app`.
 #
 # Uso:
 #   1) cp .env.prod.example .env.prod   → riempi i valori
 #   2) docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
-#   3) docker network connect traefik-net rifugio_connesso_app
+#   3) docker network connect proxy rifugio_connesso_app
 #      (e opz. rifugio_connesso_pgadmin se profilo tools attivo)
 #
 # Note:
@@ -79,8 +79,12 @@ services:
       CDN_BASE_URL: https://${APP_HOST:-rifugiebivacchi.cl.robinmail.it}/uploads
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
-      RESEND_API_KEY: ${RESEND_API_KEY:-}
-      ADMIN_NOTIFY_EMAIL: ${ADMIN_NOTIFY_EMAIL:-}
+      APP_HOST: ${APP_HOST:-rifugiebivacchi.cl.robinmail.it}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-25}
+      SMTP_FROM: ${SMTP_FROM:-Rifugi e Bivacchi <noreply@cailugo.it>}
+      SMTP_ENVELOPE_FROM: ${SMTP_ENVELOPE_FROM:-noreply@cailugo.it}
+      ADMIN_NOTIFY_EMAIL: ${ADMIN_NOTIFY_EMAIL:-rifugi@cailugo.it}
     volumes:
       - uploads:/app/uploads
       - backups:/app/backups

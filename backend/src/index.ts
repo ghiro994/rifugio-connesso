@@ -9,6 +9,7 @@ import fastifyStatic from '@fastify/static';
 import bcrypt from 'bcryptjs';
 import { pool, query } from './db.js';
 import { importCsvData } from './import-csv.js';
+import { notifyNewAnnouncement } from './mail.js';
 
 const PORT = Number(process.env.PORT || 3000);
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
@@ -139,7 +140,14 @@ app.post('/api/announcements', async (req, reply) => {
     ],
   );
 
-  console.log(`[notify] Nuovo annuncio: ${b.title} (${b.type}) — ${b.contact_name}, ${b.region}`);
+  void notifyNewAnnouncement({
+    title: String(b.title),
+    type: String(b.type),
+    contactName: String(b.contact_name),
+    region: String(b.region),
+    email: b.email ? String(b.email) : null,
+  });
+
   return reply.code(201).send(r.rows[0]);
 });
 
