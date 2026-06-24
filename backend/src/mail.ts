@@ -9,7 +9,7 @@ const ADMIN_NOTIFY_BCC = (process.env.ADMIN_NOTIFY_BCC || '')
   .split(',')
   .map((e) => e.trim())
   .filter(Boolean);
-const APP_HOST = process.env.APP_HOST || 'rifugiebivacchi.cl.robinmail.it';
+const APP_HOST = process.env.APP_HOST || 'rifugiebivacchi.cailugo.it';
 
 function escapeHtml(value: string): string {
   return value
