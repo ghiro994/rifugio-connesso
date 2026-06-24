@@ -9,7 +9,7 @@ import fastifyStatic from '@fastify/static';
 import bcrypt from 'bcryptjs';
 import { pool, query } from './db.js';
 import { importCsvData } from './import-csv.js';
-import { notifyNewAnnouncement } from './mail.js';
+import { notifyNewAnnouncement, notifyContactForm } from './mail.js';
 
 const PORT = Number(process.env.PORT || 3000);
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), 'uploads');
@@ -149,6 +149,27 @@ app.post('/api/announcements', async (req, reply) => {
   });
 
   return reply.code(201).send(r.rows[0]);
+});
+
+app.post('/api/contact', async (req, reply) => {
+  const b = req.body as { name?: string; email?: string; message?: string };
+  const name = b.name?.trim();
+  const email = b.email?.trim().toLowerCase();
+  const message = b.message?.trim();
+
+  if (!name || !email || !message) {
+    return reply.code(400).send({ error: 'Nome, email e messaggio sono obbligatori' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return reply.code(400).send({ error: 'Email non valida' });
+  }
+
+  const sent = await notifyContactForm({ name, email, message });
+  if (!sent) {
+    return reply.code(503).send({ error: 'Invio email temporaneamente non disponibile' });
+  }
+
+  return reply.code(200).send({ success: true });
 });
 
 // --- Rifugi (public) ---

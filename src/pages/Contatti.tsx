@@ -1,12 +1,27 @@
 import { Mail, MapPin, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
+import { api } from '@/lib/api';
 
 const Contatti = () => {
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    if (submitting) return;
+    setSubmitting(true);
+    setError('');
+
+    try {
+      await api.post('/api/contact', form);
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Invio non riuscito. Riprova più tardi.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -47,11 +62,36 @@ const Contatti = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <input required placeholder="Nome" className="w-full border border-border rounded-md px-3 py-2.5 bg-card text-foreground text-sm" />
-              <input required type="email" placeholder="Email" className="w-full border border-border rounded-md px-3 py-2.5 bg-card text-foreground text-sm" />
-              <textarea required rows={4} placeholder="Messaggio" className="w-full border border-border rounded-md px-3 py-2.5 bg-card text-foreground text-sm" />
-              <button type="submit" className="w-full bg-primary text-primary-foreground py-2.5 rounded-md font-medium hover:opacity-90 transition-opacity">
-                Invia messaggio
+              <input
+                required
+                placeholder="Nome"
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                className="w-full border border-border rounded-md px-3 py-2.5 bg-card text-foreground text-sm"
+              />
+              <input
+                required
+                type="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                className="w-full border border-border rounded-md px-3 py-2.5 bg-card text-foreground text-sm"
+              />
+              <textarea
+                required
+                rows={4}
+                placeholder="Messaggio"
+                value={form.message}
+                onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
+                className="w-full border border-border rounded-md px-3 py-2.5 bg-card text-foreground text-sm"
+              />
+              {error && <p className="text-sm text-destructive">{error}</p>}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full bg-primary text-primary-foreground py-2.5 rounded-md font-medium hover:opacity-90 transition-opacity disabled:opacity-60"
+              >
+                {submitting ? 'Invio in corso…' : 'Invia messaggio'}
               </button>
             </form>
           )}

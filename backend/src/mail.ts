@@ -102,3 +102,31 @@ export async function notifyNewAnnouncement(data: {
     bcc: ADMIN_NOTIFY_BCC,
   });
 }
+
+export async function notifyContactForm(data: {
+  name: string;
+  email: string;
+  message: string;
+}): Promise<boolean> {
+  const subject = `Contatto da sito: ${data.name}`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #2d5016; margin-bottom: 16px;">Nuovo messaggio dal form Contatti</h2>
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr><td style="padding: 8px; border-bottom: 1px solid #e5e5e5; font-weight: bold;">Nome</td><td style="padding: 8px; border-bottom: 1px solid #e5e5e5;">${escapeHtml(data.name)}</td></tr>
+        <tr><td style="padding: 8px; border-bottom: 1px solid #e5e5e5; font-weight: bold;">Email</td><td style="padding: 8px; border-bottom: 1px solid #e5e5e5;">${escapeHtml(data.email)}</td></tr>
+      </table>
+      <p style="font-weight: bold; margin-bottom: 8px;">Messaggio</p>
+      <p style="white-space: pre-wrap; line-height: 1.6;">${escapeHtml(data.message)}</p>
+      <p style="color: #888; font-size: 12px; margin-top: 30px;">Rifugi e Bivacchi — Sezione CAI Lugo</p>
+    </div>
+  `;
+
+  return sendMail({
+    to: ADMIN_NOTIFY_EMAIL,
+    subject,
+    html,
+    replyTo: data.email,
+    bcc: ADMIN_NOTIFY_BCC,
+  });
+}
