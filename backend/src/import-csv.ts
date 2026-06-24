@@ -178,12 +178,53 @@ export async function importCsvData(force = false) {
   console.log(`Importati ${rifugi.length} rifugi`);
 }
 
+/** Inserisce solo annunci non già presenti (ON CONFLICT id DO NOTHING). */
+export async function importAnnouncementsIncremental() {
+  const announcements = readCsv('announcements.csv');
+  let inserted = 0;
+
+  for (const row of announcements) {
+    const r = await query(
+      `INSERT INTO announcements (
+        id, type, title, description, contact_name, email, phone, region, season, status,
+        rifugio_name, role_sought, website, desired_role, experience, preferred_area, availability,
+        created_at, updated_at
+      ) VALUES (
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19
+      ) ON CONFLICT (id) DO NOTHING
+      RETURNING id`,
+      [
+        row.id, row.type, row.title, row.description, row.contact_name, row.email,
+        row.phone || null, row.region, row.season, row.status,
+        row.rifugio_name || null, row.role_sought || null, row.website || null,
+        row.desired_role || null, row.experience || null, row.preferred_area || null,
+        row.availability || null, row.created_at, row.updated_at,
+      ],
+    );
+    if (r.rows.length > 0) inserted++;
+  }
+
+  const total = await query('SELECT COUNT(*)::int AS c FROM announcements');
+  console.log(`CSV: ${announcements.length} righe — inseriti: ${inserted}, già presenti: ${announcements.length - inserted}`);
+  console.log(`Totale annunci in DB: ${total.rows[0].c}`);
+}
+
 if (process.argv[1]?.includes('import-csv')) {
-  importCsvData(process.argv.includes('--force'))
-    .then(() => pool.end())
-    .catch((e) => {
-      console.error(e);
-      pool.end();
-      process.exit(1);
-    });
+  if (process.argv.includes('--incremental')) {
+    importAnnouncementsIncremental()
+      .then(() => pool.end())
+      .catch((e) => {
+        console.error(e);
+        pool.end();
+        process.exit(1);
+      });
+  } else {
+    importCsvData(process.argv.includes('--force'))
+      .then(() => pool.end())
+      .catch((e) => {
+        console.error(e);
+        pool.end();
+        process.exit(1);
+      });
+  }
 }
