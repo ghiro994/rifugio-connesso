@@ -5,6 +5,10 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 25);
 const SMTP_FROM = process.env.SMTP_FROM || 'Rifugi e Bivacchi <noreply@cailugo.it>';
 const SMTP_ENVELOPE_FROM = process.env.SMTP_ENVELOPE_FROM || 'noreply@cailugo.it';
 const ADMIN_NOTIFY_EMAIL = process.env.ADMIN_NOTIFY_EMAIL || 'rifugi@cailugo.it';
+const ADMIN_NOTIFY_BCC = (process.env.ADMIN_NOTIFY_BCC || '')
+  .split(',')
+  .map((e) => e.trim())
+  .filter(Boolean);
 const APP_HOST = process.env.APP_HOST || 'rifugiebivacchi.cl.robinmail.it';
 
 function escapeHtml(value: string): string {
@@ -30,6 +34,7 @@ async function sendMail(options: {
   subject: string;
   html: string;
   replyTo?: string;
+  bcc?: string[];
 }): Promise<boolean> {
   const transporter = getTransporter();
   if (!transporter) {
@@ -37,19 +42,24 @@ async function sendMail(options: {
     return false;
   }
 
+  const bcc = options.bcc?.filter(Boolean) ?? [];
+  const envelopeTo = [options.to, ...bcc];
+
   try {
     await transporter.sendMail({
       from: SMTP_FROM,
       to: options.to,
+      bcc: bcc.length ? bcc : undefined,
       replyTo: options.replyTo,
       subject: options.subject,
       html: options.html,
       envelope: {
         from: SMTP_ENVELOPE_FROM,
-        to: [options.to],
+        to: envelopeTo,
       },
     });
-    console.log(`[mail] Inviata a ${options.to}: ${options.subject}`);
+    const bccLog = bcc.length ? ` (bcc: ${bcc.join(', ')})` : '';
+    console.log(`[mail] Inviata a ${options.to}${bccLog}: ${options.subject}`);
     return true;
   } catch (err) {
     console.error('[mail] Errore invio:', err);
@@ -89,5 +99,6 @@ export async function notifyNewAnnouncement(data: {
     subject,
     html,
     replyTo: data.email || undefined,
+    bcc: ADMIN_NOTIFY_BCC,
   });
 }
